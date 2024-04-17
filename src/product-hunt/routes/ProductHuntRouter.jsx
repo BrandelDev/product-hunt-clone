@@ -1,6 +1,6 @@
 import { Navigate, Routes, Route } from 'react-router-dom';
-import { Navbar } from '../../ui';
-import { HomePage } from '../product-hunt/components'
+import { Navbar } from '../../ui/components/Navbar';
+import { HomePage } from '../pages';
 
 
 export const ProductHuntRouter = () => { 
@@ -8,6 +8,7 @@ export const ProductHuntRouter = () => {
     return(
         <>
         <Navbar/>
+        
         <div className='container'>
             <Routes>
                 <Route path='/' element={<HomePage/>}/>

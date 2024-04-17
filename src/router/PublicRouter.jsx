@@ -1,20 +1,11 @@
-import { Routes, Route } from 'react-router-dom'
-import { HomePage } from '../product-hunt/components/HomePage'
-export const AppRouter = ()=>{
+import { Navigate } from 'react-router-dom'; 
 
-    return(
-        <>
-        <Routes>
-            <Route path=''
-            element={
-                <PublicRouter>
-                    <HomePage/>
-                </PublicRouter>
-            }/>
-
-        </Routes>
-        </>
-    )
+import { useContext } from "react";
+import { AuthContext } from "../auth";
 
 
+export const PublicRouter = ({ children }) => {
+  const { logged } = useContext(AuthContext);
+
+  return (!logged) ? children : <Navigate to="/" />
 }

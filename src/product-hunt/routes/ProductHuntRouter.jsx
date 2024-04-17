@@ -8,12 +8,12 @@ export const ProductHuntRouter = () => {
     return(
         <>
         <Navbar/>
-        
-        <div className='container'>
+
+       
             <Routes>
                 <Route path='/' element={<HomePage/>}/>
             </Routes>
-        </div>
+
 
         </>
     )

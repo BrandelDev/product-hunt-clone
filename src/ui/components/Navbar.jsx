@@ -2,9 +2,12 @@ import { Link, NavLink, useNavigate } from "react-router-dom"
 import { useContext } from "react";
 import { AuthContext } from "../../auth";
 import logoNavbar from "../../assets/NavBar/logo-product-hunt-navbar.png"
-
+import './Navbar.css'
 
 export const Navbar = () => {
+
+ 
+
     const { user, logout } = useContext(AuthContext);
 
     const navigate = useNavigate();
@@ -16,6 +19,11 @@ export const Navbar = () => {
             replace: true
         });
     }
+
+       const signInButtonStyles = {
+        color:'transparent',
+        textDecoration: 'unset'
+      };
 
     return (
         <>
@@ -34,29 +42,29 @@ export const Navbar = () => {
                 <div className="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                     <ul className="navbar-nav">
                         <li className="nav-item active">
-                            <a className="nav-link" href="#">Launches</a>
+                            <a className="nav-link" >Launches</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">Products</a>
+                            <a className="nav-link">Products</a>
                         </li>
 
                         <li className="nav-item">
-                            <a className="nav-link" href="#">News</a>
+                            <a className="nav-link" >News</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#">Advertise</a>
+                            <a className="nav-link">Advertise</a>
                         </li>
                     </ul>
 
                 </div>
 
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end align-items-center">
                     <ul className="navbar-nav">
-                        <li className="nav-item" >
+                        <li className="d-flex  align-items-center nav-item" >
                             <a>How to post?</a>
                         </li>
-                        <li className="nav-item">
-                            <a className="ms-3" >Sing in</a>
+                        <li className='ms-3 sign-in-buttom'>
+                            <NavLink to='/welcome'><a style={signInButtonStyles} className="decoration-link">Sing in</a></NavLink>
                         </li>
                     </ul>
                 </div>

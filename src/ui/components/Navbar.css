@@ -1,0 +1,30 @@
+.sign-in-buttom{
+    background-color: #fef6f2;
+    border-radius: 4px;
+    padding: 6px 20px; 
+    text-decoration: unset !important;
+    color: transparent !important;
+  }
+
+  .decoration-link{
+    background: linear-gradient(227deg, #ff4582, #e12e0d) !important;
+    /* -webkit-background-clip: text !important; */
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent;
+    text-decoration: unset !important;
+    color: transparent !important;
+    
+  }
+
+  .active{
+    font-weight: bold;
+  }
+
+  a{
+    font-weight: bold;
+    color:#e12e0d;
+    text-decoration: unset;
+    cursor: pointer;
+  }
+
+  

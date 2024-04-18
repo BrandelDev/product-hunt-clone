@@ -1,3 +1,6 @@
+import { CreateProfilePage } from "../../auth/pages/CreateProfilePage";
+import SignInPage from "../../auth/pages/SignInPage";
+import { TopProducts } from "../components/TopProducts";
 
 export const HomePage = () => {
 
@@ -10,44 +13,7 @@ export const HomePage = () => {
         borderBottom: '1px solid #d9e1ec'
     }
    
-    const topProducts = [
-        {
-            iconUrl: '',
-            nameOfProduct: 'Reflex',
-            description: 'Build web apps in pure Python',
-            numberOfComments: '128',
-            categories: ['Web app,', 'Open Source', 'Developer Tools']
-        },
-        {
-            iconUrl: '',
-            nameOfProduct: 'Reflex',
-            description: 'Build web apps in pure Python',
-            numberOfComments: '128',
-            categories: ['Web app,', 'Open Source', 'Developer Tools']
-        },
-        {
-            iconUrl: '',
-            nameOfProduct: 'Reflex',
-            description: 'Build web apps in pure Python',
-            numberOfComments: '128',
-            categories: ['Web app,', 'Open Source', 'Developer Tools']
-        },
-        {
-            iconUrl: '',
-            nameOfProduct: 'Reflex',
-            description: 'Build web apps in pure Python',
-            numberOfComments: '128',
-            categories: ['Web app,', 'Open Source', 'Developer Tools']
-        },
-        {
-            iconUrl: '',
-            nameOfProduct: 'Reflex',
-            description: 'Build web apps in pure Python',
-            numberOfComments: '128',
-            categories: ['Web app,', 'Open Source', 'Developer Tools']
-        }
-
-    ]
+  
 
 
 
@@ -57,7 +23,7 @@ export const HomePage = () => {
             <div className="">
                 <div className="row pt-3 mt-3">
                     <div className="col-2"></div>
-                    <div style={borderRight} className="col-lg-5">
+                    <div style={borderRight} className="col-lg-6">
                         <div className="alert alert-primary">
                             <h3>Welcome to Product Hunt! 👋</h3>
                             <label>The place to lauch andd discover new tech products. Take a tour</label>
@@ -72,10 +38,10 @@ export const HomePage = () => {
                                 <a className="me-3">Featured</a> | <a className="ms-3">All</a>
                             </div>
                         </div>
-
+                        <TopProducts/>
 
                     </div>
-                    <div className="col-lg-4">
+                    <div className="col-lg-3">
                         <label className="mb-3 pb-2">TOP LAUNCHES</label>
                         <div className="d-flex flex-column ">
 

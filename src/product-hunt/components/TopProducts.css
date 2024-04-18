@@ -1,0 +1,24 @@
+.sub-description-products {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.product{
+    transition: background-color 0.3s ease;
+    background-image: linear-gradient(12deg, #fff 50%, hsla(0, 0%, 100%, 0))
+}
+
+.product:hover {
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #feede6;
+}
+
+.buttom-up {
+    width: 45px;
+    background-color: white;
+    border-radius: 5px;
+    border-color: rgb(217, 225, 236);
+    
+}

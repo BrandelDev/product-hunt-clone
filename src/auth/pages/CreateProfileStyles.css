@@ -1,0 +1,9 @@
+.header-new-profile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 300px;
+    z-index: -1;
+    background: linear-gradient(180deg, transparent, hsla(0, 0%, 95%, .29) 47.39%, #fff 65%), linear-gradient(90deg, #f9ddf1 .07%, #e5e1ff 16.73%, #daedff 34.48%, #e2f4e3 49.98%, #ebf5d8 66.12%, #faf2da 81.95%, #fbe5d8 99.9%);
+}

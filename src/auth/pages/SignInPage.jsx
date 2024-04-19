@@ -25,9 +25,7 @@ const SignInPage = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí puedes manejar la lógica de inicio de sesión, como enviar los datos a tu backend
-    console.log('Email:', email);
-    console.log('Password:', password);
+
   };
 
   return (

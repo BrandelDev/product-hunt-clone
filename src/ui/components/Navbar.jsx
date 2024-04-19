@@ -64,7 +64,7 @@ export const Navbar = () => {
                             <a>How to post?</a>
                         </li>
                         <li className='ms-3 sign-in-buttom'>
-                            <NavLink to='/welcome'><a style={signInButtonStyles} className="decoration-link">Sing in</a></NavLink>
+                            <NavLink  style={signInButtonStyles} className="decoration-link" to='/welcome'>Sing in</NavLink>
                         </li>
                     </ul>
                 </div>

@@ -89,10 +89,10 @@ export const TopProducts = () => {
                     </div>
 
                     <div className='col-md-2 text-center'>
-                        <button type="button" data-test="vote-button" class="buttom-up">
-                            <div class="flex flex-col items-center">
+                        <button type="button" data-test="vote-button" className="buttom-up">
+                            <div className="flex flex-col items-center">
                                 <img src={iconUp} width='20px' />
-                                <div class="">{item.numberOfComments}</div>
+                                <div className="">{item.numberOfComments}</div>
                             </div>
                         </button>
                     </div>

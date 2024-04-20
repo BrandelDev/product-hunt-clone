@@ -36,4 +36,4 @@ Para instalar y ejecutar este proyecto en tu máquina local, sigue estos pasos:
 1. Clona este repositorio en tu computadora:
 
    ```bash
-   git clone https://github.com/tu-usuario/product-hunt-clone.git
+   git clone https://github.com/BrandelDev/product-hunt-clone.git

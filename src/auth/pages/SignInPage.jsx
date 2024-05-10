@@ -1,32 +1,43 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from "../context";
+import { Link } from 'react-router-dom';
+import { useForm } from '../../product-hunt/hooks';
+import { useNavigate } from "react-router-dom"
 
-import { AuthContext } from "../context"
-import { Link, useNavigate } from 'react-router-dom';
+const initForm = {
+  email: '',
+  password: ''
+}
 
 const SignInPage = () => {
-
-
-  const { login } = useContext(AuthContext);
-
+  const { login, loginGoogle, errorMessage } = useContext(AuthContext);
+  const { onInputChange, email, password, isFormValid } = useForm(initForm);
   const navigate = useNavigate();
 
-  const onLogin = () =>{
-    const lastPath = localStorage.getItem('lastPath') || '/'
-    login('')
-    navigate(lastPath,{
-        replace: true
-    })
+  const onLogin = async (e) => {
+    e.preventDefault();
+    console.log(email)
+
+    if (isFormValid) {
+      const isValidLogin = await login(email, password);
+      if (isValidLogin) {
+        const lastPath = localStorage.getItem('lastPath') || '/user-view'
+        navigate(lastPath, { replace: true });
+      }
+    }
   }
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const onGoogleLogin = async (event) => {
+    event.preventDefault();
 
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-  };
+    if (isFormValid) {
+      const isValidLogin = await loginGoogle();
+      if (isValidLogin) {
+        const lastPath = localStorage.getItem('lastPath') || '/user-view'
+        navigate(lastPath, { replace: true });
+      }
+    }
+  }
 
   return (
     <div className="container">
@@ -35,16 +46,16 @@ const SignInPage = () => {
           <div className="card">
             <div className="card-body">
               <h2 className="card-title text-center mb-4">Sign In</h2>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={onLogin}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">Email:</label>
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     className="form-control"
                     value={email}
-                    onChange={handleEmailChange}
-                    required
+                    onChange={onInputChange}
                   />
                 </div>
                 <div className="mb-3">
@@ -52,15 +63,27 @@ const SignInPage = () => {
                   <input
                     type="password"
                     id="password"
+                    name="password"
                     className="form-control"
                     value={password}
-                    onChange={handlePasswordChange}
-                    required
+                    onChange={onInputChange}
                   />
                 </div>
                 <div className="text-center">
-                  <button type="submit" className="btn btn-primary">Sign In</button> OR &nbsp;
+                  <button type="submit" className="btn btn-primary" disabled={!isFormValid}>Sign In</button> OR &nbsp;
                   <Link to="/register"><label className='form-label'>  Create an account</label></Link>
+                  <br />
+                  {!errorMessage ? null :
+                    <div
+                      className="alert alert-danger"
+                      role="alert"
+                    >
+                      {errorMessage}
+                    </div>
+                  }
+                </div>
+                <div className='text-center py-3'>
+                  <button className="btn btn-primary" onClick={onGoogleLogin}>Sign In with Google</button>
                 </div>
               </form>
             </div>

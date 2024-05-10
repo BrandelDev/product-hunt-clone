@@ -1,149 +1,135 @@
-
-import React, { useState, useRef, useContext } from 'react';
-import './CreateProfileStyles.css'
-import avatarLogo from '../../assets/Auth/CreateProfile/avatar-logo.png'
+import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context';
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom';
+import { useForm } from '../../product-hunt/hooks';
+import { Link } from 'react-router-dom';
+import avatarLogo from '../../assets/Auth/CreateProfile/avatar-logo.png';
+import './CreateProfileStyles.css'
+
+const initForm = {
+    userName: '',
+    email: '',
+    password: '',
+    bio: '',
+};
+
 
 export const CreateProfilePage = () => {
-
-    const { login, logout } = useContext(AuthContext);
-
+    const { register, errorMessage } = useContext(AuthContext);
+    const { userName, email, password, bio, onInputChange } = useForm(initForm);
     const navigate = useNavigate();
 
-    const miInputRef = useRef(null);
-    const handleButtonClick = () => {
-        console.log('Hola')
-        miInputRef.current.click();
-    }
-    const [idUser, setIdUser] = useState('');
-    const [userName, setUserName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [bio, setBio] = useState('');
-    const [avatar, setAvatar] = useState('');
-    const [createdAt, setCreatedAt] = useState('');
-    const [updatedAt, setUpdatedAt] = useState('');
+    const [avatar, setAvatar] = useState(null);
 
-
-    const handleUserNameChange = (e) => setUserName(e.target.value);
-    const handleEmailChange = (e) => setEmail(e.target.value);
-    const handleBioChange = (e) => setBio(e.target.value);
-    const handlePasswordChange = (e) => setPassword(e.target.value);
-    const handleAvatarChange = (e) => setAvatar(e.target.files[0]);
-
-    const loginNewUser = (e = '') => {
-        const lastPath = localStorage.getItem('lastPath') || '/user-logged/post-product'
-        login(e);
-        navigate(lastPath, {
-            replace: true
-        })
-
-    }
-
-    const handleSubmit = (e) => {
-        setIdUser(Math.floor(Math.random() * 100) + 1);
-        setCreatedAt(new Date().toISOString())
-        e.preventDefault();
-
-        const userObj = {
-            idUser: idUser,
-            userName: userName,
-            email: email,
-            password: password,
-            bio: bio,
-            avatar: avatar,
-            createdAt: createdAt,
-            updatedAt: ''
-        }
-
-        loginNewUser(userObj);
-
+    const handleAvatarChange = (event) => {
+        const file = event.target.files[0];
+        setAvatar(file);
     };
 
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+    
 
+
+        const isValidRegister = await register(email, password, userName);
+
+        if (isValidRegister) {
+            const lastPath = localStorage.getItem('lastPath') || '/user-view';
+            navigate(lastPath, { replace: true });
+        }
+    };
 
     return (
-        <>
-            <div className="container mt-5">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <div className='header-new-profile'>
-
-                        </div>
-                        <h3 className="card-title text-left mb-4">Create your profile</h3>
-
-                        <div className="card">
-                            <div className="card-body">
-                                <form onSubmit={handleSubmit}>
-                                    <div className='row'>
-                                        <div className='col-2'>
-                                            <div className='mb-3'>
-                                                <div className="card align-items-center d-flex" >
-                                                    <img className=" p-3 card-img-top" src={avatarLogo} alt="Card image cap" />
-
-                                                </div>
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    <div className='header-new-profile'>
+                    </div>
+                    <h3 className="card-title text-left mb-4">Create your profile</h3>
+                    <div className="card">
+                        <div className="card-body">
+                            <form onSubmit={handleSubmit}>
+                                <div className="row">
+                                    <div className="col-2">
+                                        <div className="mb-3">
+                                            <div className="card align-items-center d-flex">
+                                                <img className="p-3 card-img-top" src={avatarLogo} alt="Avatar" />
                                             </div>
                                         </div>
-                                        <div className='col'>
-                                            <h3>Avatar</h3><br />
-                                            <a onClick={handleButtonClick} className='btn btn-warning'>Upload avatar</a>
-                                            <input type='file' className='d-none' ref={miInputRef} onChange={handleAvatarChange} accept=".png, .jpeg, .jpg" />
-                                        </div>
                                     </div>
+                                    <div className="col">
+                                        <h3>Avatar</h3><br />
+                                        <input type="file" onChange={handleAvatarChange} accept=".png, .jpeg, .jpg" />
+                                    </div>
+                                </div>
 
-                                    <div className="mb-3">
-                                        <label htmlFor="userName" className="form-label">User name:</label>
-                                        <input
-                                            type="text"
-                                            id="userName"
-                                            className="form-control"
-                                            value={userName}
-                                            onChange={handleUserNameChange}
-                                            required
-                                        />
+                                <div className="mb-3">
+                                    <label htmlFor="userName" className="form-label">User name:</label>
+                                    <input
+                                        type="text"
+                                        id="userName"
+                                        name="userName"
+                                        className="form-control"
+                                        value={userName}
+                                        onChange={onInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="email" className="form-label">Email:</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        className="form-control"
+                                        value={email}
+                                        onChange={onInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="password" className="form-label">Password:</label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        className="form-control"
+                                        value={password}
+                                        onChange={onInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="bio" className="form-label">Bio:</label>
+                                    <textarea
+                                        id="bio"
+                                        name="bio"
+                                        className="form-control"
+                                        value={bio}
+                                        onChange={onInputChange}
+                                        rows={4}
+                                    />
+                                </div>
+                                <br />
+                                {!errorMessage ? null :
+                                    <div className="alert alert-danger" role="alert">
+                                        {errorMessage}
                                     </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="email" className="form-label">Email:</label>
-                                        <input
-                                            type="text"
-                                            id="email"
-                                            className="form-control"
-                                            value={email}
-                                            onChange={handleEmailChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="password" className="form-label">Password:</label>
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            className="form-control"
-                                            value={password}
-                                            onChange={handlePasswordChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="bio" className="form-label">Bio:</label>
-                                        <textarea
-                                            id="bio"
-                                            className="form-control"
-                                            value={bio}
-                                            onChange={handleBioChange}
-                                            rows={4}
-                                        />
-                                    </div>
-                                    <div className="text-center">
-                                        <button type="submit" className="btn btn-primary">Create Profile</button>
-                                    </div>
-                                </form>
+                                }
+                                <div className="text-center">
+                                    <button type="submit" className="btn btn-primary">Create Profile</button>
+                                </div>
+                            </form>
+                            <div className="text-center pt-2">
+                                <span>Do you have an existing account?</span>
+                                <Link to="/welcome">Login</Link>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
+
+export default CreateProfilePage;

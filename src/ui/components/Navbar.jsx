@@ -6,7 +6,7 @@ import './Navbar.css'
 
 export const Navbar = () => {
 
- 
+    const { logged } = useContext(AuthContext);
 
     const { user, logout } = useContext(AuthContext);
 
@@ -14,16 +14,16 @@ export const Navbar = () => {
 
     const onLogout = () => {
         logout();
-
-        navigate('/login', {
+        console.log('Tratando se salir...')
+        navigate('/welcome', {
             replace: true
         });
     }
 
-       const signInButtonStyles = {
-        color:'transparent',
+    const signInButtonStyles = {
+        color: 'transparent',
         textDecoration: 'unset'
-      };
+    };
 
     return (
         <>
@@ -60,12 +60,23 @@ export const Navbar = () => {
 
                 <div className="d-flex justify-content-end align-items-center">
                     <ul className="navbar-nav">
-                        <li className="d-flex  align-items-center nav-item" >
-                            <a>How to post?</a>
+                        <li className="me-2">
+                            <a>{user?.displayName}</a>
                         </li>
-                        <li className='ms-3 sign-in-buttom'>
-                            <NavLink  style={signInButtonStyles} className="decoration-link" to='/welcome'>Sing in</NavLink>
+                        <li className="d-flex me-2  align-items-center nav-item" >
+                           <NavLink to='/user-view' ><a>Post new product</a> </NavLink>
                         </li>
+
+                        {logged ? (
+                            <NavLink style={signInButtonStyles} onClick={() => onLogout()} className="decoration-link">
+                                Sign out
+                            </NavLink>
+                        ) : (
+
+                            <li className='ms-3 sign-in-buttom'>
+                                <NavLink style={signInButtonStyles} className="decoration-link" to='/welcome'>Sing in</NavLink>
+                            </li>
+                        )}
                     </ul>
                 </div>
 

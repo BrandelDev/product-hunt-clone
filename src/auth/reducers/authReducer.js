@@ -12,6 +12,11 @@ export const authReducer = (state = {}, action) => {
       return {
         logged: false
       };
+    case types.error:
+      return {
+        logged: false,
+        errorMessage: action.payload.errorMessage
+      };
     default:
       return state;
   }

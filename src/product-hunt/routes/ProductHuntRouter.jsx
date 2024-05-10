@@ -4,6 +4,7 @@ import { HomePage } from '../pages';
 import { CreateProfilePage } from '../../auth/pages/CreateProfilePage';
 import SignInPage from '../../auth/pages/SignInPage';
 import { ProductPost } from '../components/ProductPost';
+import UserView from '../components/UserView';
 
 
 export const ProductHuntRouter = () => { 
@@ -17,7 +18,8 @@ export const ProductHuntRouter = () => {
                 <Route path='/' element={<HomePage/>}/>
                 <Route path='/welcome' element={<SignInPage/>}/>
                 <Route path='/register' element={<CreateProfilePage/>}/>
-                <Route path='user-logged/post-product' element={<ProductPost/>}/>
+                <Route path='/user-view' element={<UserView/>}/>
+               
             </Routes>
 
 

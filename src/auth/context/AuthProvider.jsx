@@ -3,6 +3,7 @@ import { useReducer } from "react";
 import { AuthContext } from "./AuthContext";
 import { authReducer } from "../reducers";
 import { types } from "../types/types";
+import { authUserWithEmailPassword, logoutUser, registerUser, signInWithGoogle } from '../../firebase/providers'
 
 const initialState = { logged: false };
 
@@ -19,15 +20,67 @@ export const AuthProvider = ({ children }) => {
     const [authState, dispatch] = useReducer(authReducer, initialState, init);
 
 
-    const login = (user) => {
-        const action = { type: types.login, payload: user }
+    const login = async (email = '', password = '') => {
+        const { ok, uid, displayName, photoURL, errorMessage } = await authUserWithEmailPassword(email, password);
 
-        localStorage.setItem('user', JSON.stringify(user))
+
+        if (!ok) {
+            dispatch({ type: types.error, payload: { errorMessage } });
+            return false;
+        }
+
+        const payload = { ok, uid, email, displayName, photoURL };
+        console.log(payload)
+        localStorage.setItem('user', JSON.stringify(payload));
+
+        const action = { type: types.login, payload: payload }
+
 
         dispatch(action);
+
+        return true;
     }
 
-    const logout = () => {
+    const loginGoogle = async () => {
+        const { ok, uid, displayName, photoURL, errorMessage, email } = await signInWithGoogle();
+
+
+        if (!ok) {
+            dispatch({ type: types.error, payload: { errorMessage } });
+            return false;
+        }
+
+        const payload = { ok, uid, email, displayName, photoURL };
+        console.log(payload)
+        localStorage.setItem('user', JSON.stringify(payload));
+
+        const action = { type: types.login, payload: payload }
+
+
+        dispatch(action);
+
+        return true;
+    }
+
+    const register = async (email, password, displayName) => {
+        const { ok, errorMessage, photoURL, uid } = await registerUser({ email, displayName, password });
+        const payload = {
+            uid, email, photoURL, displayName
+        };
+    
+        localStorage.setItem('user', JSON.stringify(payload));
+    
+        const action = { type: types.login, payload: payload }
+    
+        dispatch(action);
+    
+        return true;
+    }
+
+    const logout = async () => {
+
+        await logoutUser();
+
         localStorage.removeItem('user')
         const action = { type: types.logout }
         dispatch(action)
@@ -38,8 +91,10 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={
             {
                 ...authState,
-                login: login,
-                logout: logout
+                login,
+                logout,
+                loginGoogle,
+                register
             }
         }
         >

@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from 'react'
+import React, { useContext, useReducer } from 'react';
 import { productReducer } from '../reducers';
 import { AuthContext } from '../../auth';
 import { doc } from 'firebase/firestore/lite';
@@ -9,36 +9,29 @@ import { ProductContext } from './ProductContext';
 
 const initialState = {
   products: []
-}
+};
 
-export const ProductsProvider = ({children}) => {
+export const ProductsProvider = ({ children }) => {
   const [productsState, dispatch] = useReducer(productReducer, initialState);
-
   const { user } = useContext(AuthContext);
 
-  const saveProduct = async (product) => {
+   const saveProduct = async (product) => {
     try {
-      const newDoc = doc(collection(FirebaseDB, `${user.uid}/product-hunt-collection`))
+      const newDocRef = doc(collection(FirebaseDB, `${user.uid}/product-hunt-collection`));
+      await setDoc(newDocRef, product);
+      product.id = newDocRef.id;
 
-      await setDoc(newDoc, product);
+      const action = { type: productTypes.saveProduct, payload: product };
+      dispatch(action); // Actualizar el estado después de guardar el producto
 
-      product.id = newDoc.id
+    } catch (error) {
+      console.error('Error saving product:', error);
+    }
+  };
 
-      const action = { type: productTypes.saveProduct, payload: product}
-
-    } catch (error) { }
-  }
-
-  return(
-    <ProductContext.Provider value={
-      { ...productsState,
-        saveProduct
-      }
-    }>
-      { children }
+  return (
+    <ProductContext.Provider value={{ ...productsState, saveProduct }}>
+      {children}
     </ProductContext.Provider>
-  )
-
-}
-
-
+  );
+};

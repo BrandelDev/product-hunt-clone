@@ -64,7 +64,7 @@ export const Navbar = () => {
                             <a>{user?.displayName}</a>
                         </li>
                         <li className="d-flex me-2  align-items-center nav-item" >
-                           <NavLink to='/user-view' ><a>Post new product</a> </NavLink>
+                           <NavLink to='/user-view' ><a>My products</a> </NavLink>
                         </li>
 
                         {logged ? (

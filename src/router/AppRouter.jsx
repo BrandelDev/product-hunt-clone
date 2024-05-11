@@ -28,14 +28,16 @@ export const AppRouter = () => {
                 <Route
                     path='/user-logged/post-product' element={
                         <PrivateRouter>
-                            <ProductsProvider />
-                            <ProductPost />
+                            <ProductsProvider>
+                                <ProductPost/>
+                            </ProductsProvider>
+
                         </PrivateRouter>
                     }
                 ></Route>
                 <Route path="/user-view" element={
                     <PrivateRouter>
-                        <ProductsProvider />
+
                         <UserView />
                     </PrivateRouter>
                 }>

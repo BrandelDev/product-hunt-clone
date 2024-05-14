@@ -29,7 +29,7 @@ export const AppRouter = () => {
                     path='/user-logged/post-product' element={
                         <PrivateRouter>
                             <ProductsProvider>
-                                <ProductPost/>
+                                <ProductPost />
                             </ProductsProvider>
 
                         </PrivateRouter>
@@ -37,8 +37,10 @@ export const AppRouter = () => {
                 ></Route>
                 <Route path="/user-view" element={
                     <PrivateRouter>
+                        <ProductsProvider>
+                            <UserView />
+                        </ProductsProvider>
 
-                        <UserView />
                     </PrivateRouter>
                 }>
 

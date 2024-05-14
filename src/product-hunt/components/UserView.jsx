@@ -1,8 +1,36 @@
-import React, { useState } from 'react';
-import { ProductPost } from './ProductPost';
+import React, { useEffect, useState } from 'react';
+import { useContext } from "react";
+import { ProductContext } from '../context/ProductContext';
 import { Link } from 'react-router-dom';
 
 const UserView = () => {
+
+    const { getProducts } = useContext(ProductContext);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+          const fetchedProducts = await getProducts();
+          setProducts(fetchedProducts);
+          
+        };
+    
+        fetchProducts();
+      }, []);
+
+      console.log(products)
+
+
+
+
+
+
+
+
+
+
+
+
     const [reviews, setReviews] = useState([
         { id: 1, title: 'Great Product', content: 'This product is amazing!', author: 'John Doe' },
         { id: 2, title: 'Excellent Service', content: 'The customer service is top-notch.', author: 'Jane Smith' },
@@ -15,15 +43,7 @@ const UserView = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const addReview = () => {
-        if (formData.title && formData.content && formData.author) {
-            const newReview = { ...formData, id: Date.now() };
-            setReviews([...reviews, newReview]);
-            setFormData({ title: '', content: '', author: '' });
-        } else {
-            alert('Please fill out all fields.');
-        }
-    };
+
 
     const editReview = (id) => {
         const reviewToEdit = reviews.find((review) => review.id === id);
@@ -57,11 +77,10 @@ const UserView = () => {
             <div className="row">
                 <div className="col-md-6">
                     <ul className="list-group">
-                        {reviews.map((review) => (
-                            <li key={review.id} className="list-group-item">
-                                <h4>{review.title}</h4>
-                                <p>{review.content}</p>
-                                <p>By: {review.author}</p>
+                        {products.map((products) => (
+                            <li key={products.id} className="list-group-item">
+                                <h4>{products.data.name}</h4>
+                                <p>{products.data.description}</p>
                                 <button className="btn btn-sm btn-primary mr-2" onClick={() => editReview(review.id)}>Edit</button>
                                 <button className="btn btn-sm btn-danger" onClick={() => deleteReview(review.id)}>Delete</button>
                             </li>
@@ -71,7 +90,7 @@ const UserView = () => {
                 <div className="col-md-6">
                     <div className="card">
                         <div className="card-body">
-                            <span>Do want create a new product?</span><br/>
+                            <span>Do want create a new product?</span><br />
                             <Link to="/user-logged/post-product">Create</Link>
                         </div>
                     </div>

@@ -7,6 +7,11 @@ export const productReducer = (state = {}, action) => {
                 ...state,
                 products: state.products.push(action.payload)
             }
+         case productTypes.listProduct:
+            return {
+                ...state,
+                products: state.products.push(action.payload)
+            } 
         default:
            return state;
       

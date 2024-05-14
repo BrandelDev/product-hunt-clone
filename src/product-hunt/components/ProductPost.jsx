@@ -1,106 +1,131 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useContext } from "react";
 import { AuthContext } from "../../auth/context/AuthContext"
 import { ProductContext } from '../context/ProductContext';
 import { useForm } from '../hooks/useForm';
+import { storage } from '../../firebase/config';
+import { ref, uploadBytes, list, getDownloadURL } from 'firebase/storage';
+import { v4 } from 'uuid';
+
+const styleCard = {
+    with: '18rem'
+}
 
 const newProduct = {
-    title: '',
+    _id: '',
+    name: '',
     description: '',
     url: '',
     userId: '',
-    content: '',
+    image: '',
     createdAt: '',
-    updateAt: ''
+    updatedAt: ''
 }
+
+
 
 export const ProductPost = () => {
 
-    const { saveProduct} = useContext(ProductContext)
+    const { saveProduct } = useContext(ProductContext)
     const { user } = useContext(AuthContext);
 
-    const { title, description, url, content, images, onInputChange } = useForm(newProduct)
+    const [imageProduct, setImageProduct] = useState()
 
-    const [product, setProduct] = useState({
-        title: 'Example product',
-        description: 'Description of product',
-        publisher: user?.displayName,
-        averageRating: 4.5,
-        images: ['https://via.placeholder.com/150'],
-        purchaseLink: 'https://www.example.com',
-    });
+    const { name, description, url, image, onInputChange } = useForm(newProduct)
 
-    // const [reviews, setReviews] = useState([
-    //     { id: 1, user: 'User1', rate: 4, content: 'Good quality' },
-    //     { id: 2, user: 'User2', rate: 5, content: 'Exelent quality' },
-    // ]);
+    const [imageUpload, setImageUpload] = useState()
 
-    const [newReview, setNewReview] = useState({ id: 0, user: '', rate: 0, content: '' });
+
+    const uploadImage = () => {
+        if (imageUpload == null) return;
+        const imageRef = ref(storage, `products-images/${imageUpload.name + v4()}`);
+        uploadBytes(imageRef, imageUpload).then(() => {
+            alert('Image of product was upload')
+            getDownloadURL(imageRef).then((url) => {
+                setImageProduct(url)
+            })
+                .catch((error) => {
+                    console.error('Error fetching download URL:', error);
+                });
+        })
+    }
+
+
 
     const handleSubmitReview = () => {
-        // const userJSON = localStorage.getItem('user');
-        // const userObj = JSON.parse(userJSON);
+        console.log(user)
+        var currentdate = new Date();
+        var datetime = currentdate.getDate() + "/"
+            + (currentdate.getMonth() + 1) + "/"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
 
-        // newReview.user = userObj.userName;
-        // setReviews([...reviews, newReview]);
-        // console.log(reviews);
+        const product = {
+            _id: '',
+            name: name,
+            description: description,
+            url: url,
+            userId: user.uid,
+            image: imageProduct,
+            createdAt: datetime,
+            updateAt: ''
+        }
+        saveProduct(product);
     };
 
     return (
         <div className="container mt-4">
             <div className="row">
-                <div className="col-2">
-                    <img src={product.images[0]} className="card-img-top img-fluid " alt="Producto" />
+                <div className='col-6'>
+                    <div className="card" >
+                        <img className="card-img-top" style={styleCard} src={imageProduct} />
+                        <div className="card-body">
+                            <h5 className="card-title">Upload image of product</h5>
+                            <div className='d-flex flex-column'>
+                                <input type='file' onChange={(event) => { setImageUpload(event.target.files[0]) }} />
+                                <div className='py-2'>
+                                    <button className='btn  btn-primary' onClick={uploadImage}>Upload image</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className='col-6'>
                     <div className="card-body">
-                        <h5 className="py-3 card-title">Name of product</h5>
-                        <input type='text' id='title' name='title' className='form-control' value={description} onChange={onInputChange}/>
+                        <h5 className=" card-title">Name of product</h5>
+                        <input type='text' id='name' name='name' className='form-control' value={name} onChange={onInputChange} />
                     </div>
                     <div className='col-6'>
                         <h5 className='py-3 card-title'>Description</h5>
                         <textarea
-                                        id="description"
-                                        name="description"
-                                        className="form-control"
-                                        value={description}
-                                        onChange={onInputChange}
-                                        rows={4}
-                                    />
+                            id="description"
+                            name="description"
+                            className="form-control"
+                            value={description}
+                            onChange={onInputChange}
+                            rows={4}
+                        />
                     </div>
                     <div className='col-6'>
                         <h5 className='py-3 card-title'>Url of product</h5>
-                        <input type='text' id='url' className='form-control' value={url} onChange={onInputChange}/>
+                        <input type='text' id='url' name='url' className='form-control' value={url} onChange={onInputChange} />
+                    </div>
+                    <div className='col-6'>
+                        <div className='py-3'>
+                            <button type="button" className="btn  btn-primary" onClick={handleSubmitReview}>Send your review</button>
+                        </div>
                     </div>
                 </div>
+
             </div>
+
             <div className="row mt-4">
                 <div className='col-lg-2'></div>
-                <div className="col-lg-8">
 
-                    <form>
-                        <h3>Leave your review</h3>
-                        <div className="form-group">
-                            <label className='py-3' htmlFor="formRating">Score:</label>
-                            <select className="form-control" id="formRating" value={newReview.rate} onChange={(e) => setNewReview({ ...newReview, rate: e.target.value })}>
-                                <option value="0">Select an ranting</option>
-                                <option value="1">1 star</option>
-                                <option value="2">2 star</option>
-                                <option value="3">3 star</option>
-                                <option value="4">4 star</option>
-                                <option value="5">5 star</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label className='py-3' htmlFor="formContent">Comment:</label>
-                            <textarea className="form-control py-3" id="formContent" rows="3" value={newReview.content} onChange={(e) => setNewReview({ ...newReview, content: e.target.value })}></textarea>
-                        </div>
-                        <div className='py-3'>
-                        <button type="button" className="btn  btn-primary" onClick={handleSubmitReview}>Send your review</button>
-                        </div>
-                    </form>
-                </div>
             </div>
             {/* <div className="row mt-4">
                 <div className='col-2'></div>

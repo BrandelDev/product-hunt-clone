@@ -7,6 +7,7 @@ import { ProductPost } from '../product-hunt/components/ProductPost'
 import { Navbar } from '../../src/ui/components';
 import UserView from '../product-hunt/components/UserView'
 import { ProductsProvider } from '../product-hunt/context/ProductsProvider'
+import ProductEdit from '../product-hunt/components/ProductEdit'
 
 
 
@@ -43,7 +44,15 @@ export const AppRouter = () => {
 
                     </PrivateRouter>
                 }>
+                </Route>
+                <Route path="/edit-product/:productId" element={
+                    <PrivateRouter>
+                        <ProductsProvider>
+                            <ProductEdit/>
+                        </ProductsProvider>
 
+                    </PrivateRouter>
+                }>
                 </Route>
 
 

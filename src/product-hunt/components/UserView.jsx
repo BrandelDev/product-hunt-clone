@@ -2,25 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { useContext } from "react";
 import { ProductContext } from '../context/ProductContext';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const UserView = () => {
 
-    const { getProducts } = useContext(ProductContext);
+    const { getProducts, deleteProduct } = useContext(ProductContext);
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
+
+    const fetchProducts = async () => {
+        const fetchedProducts = await getProducts();
+        setProducts(fetchedProducts);
+    };
 
     useEffect(() => {
-        const fetchProducts = async () => {
-          const fetchedProducts = await getProducts();
-          setProducts(fetchedProducts);
-          
-        };
-    
         fetchProducts();
-      }, []);
-
-      console.log(products)
+    }, []);
 
 
+    console.log(products)
+
+    const deleteProductView = async (productId) => {
+        await deleteProduct(productId);
+        fetchProducts();
+    }
+
+    const handleEditClick = (product) => { 
+        
+        const editProductPath =  `/edit-product/${product.id}`
+        navigate(editProductPath, { replace: true })
+
+    }
 
 
 
@@ -31,10 +43,7 @@ const UserView = () => {
 
 
 
-    const [reviews, setReviews] = useState([
-        { id: 1, title: 'Great Product', content: 'This product is amazing!', author: 'John Doe' },
-        { id: 2, title: 'Excellent Service', content: 'The customer service is top-notch.', author: 'Jane Smith' },
-    ]);
+
     const [formData, setFormData] = useState({ title: '', content: '', author: '' });
     const [editingId, setEditingId] = useState(null);
 
@@ -53,23 +62,7 @@ const UserView = () => {
         }
     };
 
-    const updateReview = () => {
-        if (formData.title && formData.content && formData.author) {
-            const updatedReviews = reviews.map((review) =>
-                review.id === editingId ? { ...review, ...formData } : review
-            );
-            setReviews(updatedReviews);
-            setFormData({ title: '', content: '', author: '' });
-            setEditingId(null);
-        } else {
-            alert('Please fill out all fields.');
-        }
-    };
 
-    const deleteReview = (id) => {
-        const updatedReviews = reviews.filter((review) => review.id !== id);
-        setReviews(updatedReviews);
-    };
 
     return (
         <div className="container mt-5">
@@ -81,8 +74,8 @@ const UserView = () => {
                             <li key={products.id} className="list-group-item">
                                 <h4>{products.data.name}</h4>
                                 <p>{products.data.description}</p>
-                                <button className="btn btn-sm btn-primary mr-2" onClick={() => editReview(review.id)}>Edit</button>
-                                <button className="btn btn-sm btn-danger" onClick={() => deleteReview(review.id)}>Delete</button>
+                                <button className="btn btn-sm btn-primary mr-2" onClick={() => handleEditClick(products)}>Edit</button>
+                                <button className="btn btn-sm btn-danger" onClick={() => deleteProductView(products)}>Delete</button>
                             </li>
                         ))}
                     </ul>

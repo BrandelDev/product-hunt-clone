@@ -21,7 +21,9 @@ export const AppRouter = () => {
                     path='/*'
                     element={
                         <PublicRouter>
-                            <ProductHuntRouter />
+                            <ProductsProvider>
+                                <ProductHuntRouter />
+                            </ProductsProvider>
                         </PublicRouter>
                     }
                 ></Route>
@@ -48,7 +50,7 @@ export const AppRouter = () => {
                 <Route path="/edit-product/:productId" element={
                     <PrivateRouter>
                         <ProductsProvider>
-                            <ProductEdit/>
+                            <ProductEdit />
                         </ProductsProvider>
 
                     </PrivateRouter>

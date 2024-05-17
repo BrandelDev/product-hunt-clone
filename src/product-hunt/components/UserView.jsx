@@ -30,7 +30,7 @@ const UserView = () => {
     const handleEditClick = (product) => { 
         
         const editProductPath =  `/edit-product/${product.id}`
-        navigate(editProductPath, { replace: true })
+        navigate(editProductPath, {state: product},{ replace: true }, );
 
     }
 

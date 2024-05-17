@@ -1,5 +1,8 @@
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore';
 import { FirebaseAuth } from './config'
+import { FirebaseDB } from '../firebase/config';
+
 
 
 const GoogleProvider = new GoogleAuthProvider();
@@ -11,6 +14,11 @@ export const signInWithGoogle = async () => {
     try { 
         const result = await signInWithPopup(FirebaseAuth, GoogleProvider);
         const { uid, displayName, photoURL, email } = result.user;
+
+        if (uid) {
+            const userDocRef = doc(FirebaseDB, 'users', uid);
+            await setDoc(userDocRef, { email }, { merge: true });
+          }
 
         return {
             ok: true,
@@ -37,6 +45,11 @@ export const registerUser = async ({ email, password, displayName }) => {
       const { uid, photoURL } = resp.user
   
       await updateProfile(FirebaseAuth.currentUser, { displayName });
+
+      if (uid) {
+        const userDocRef = doc(FirebaseDB, 'users', uid);
+        await setDoc(userDocRef, { email }, { merge: true });
+      }
   
       return {
         ok: true,
@@ -59,6 +72,12 @@ export const authUserWithEmailPassword = async (email, password) => {
         console.log(result)
 
         const { uid, displayName, photoURL } = result.user;
+
+        if (uid) {
+            const userDocRef = doc(FirebaseDB, 'users', uid);
+            await setDoc(userDocRef, { email }, { merge: true });
+          }
+
 
         return {
             ok: true,

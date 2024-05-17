@@ -3,56 +3,94 @@ import { useLocation } from 'react-router-dom';
 import { ProductContext } from '../context';
 import { useContext } from "react";
 import { AuthContext } from "../../auth/context/AuthContext"
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { ref, uploadBytes, list, getDownloadURL } from 'firebase/storage';
 import { useForm } from '../hooks/useForm';
+import { storage } from '../../firebase/config';
+import { v4 } from 'uuid';
+const styleCard = {
+    with: '18rem'
+}
+
+const Product = {
+    _id: '',
+    name: '',
+    description: '',
+    url: '',
+    userId: '',
+    image: '',
+    createdAt: '',
+    updatedAt: ''
+}
+const validations = {
+    name: [value => value.trim() !== '', 'Name is required'],
+    description: [value => value.trim() !== '', 'Description is required'],
+    url: [value => value.trim() !== '', 'URL is required'],
+};
+
+
+const initialForm = {
+    name: '',
+    description: '',
+    url: '',
+    image: ''
+};
+
+
+
+
+
 const ProductEdit = () => {
 
-    const styleCard = {
-        with: '18rem'
-    }
 
-    const Product = {
-        _id: '',
-        name: '',
-        description: '',
-        url: '',
-        userId: '',
-        image: '',
-        createdAt: '',
-        updatedAt: ''
-    }
 
     const { editProduct } = useContext(ProductContext)
     const { user } = useContext(AuthContext);
 
     const [imageProduct, setImageProduct] = useState()
 
-    const { name, description, url, image, onInputChange } = useForm(Product)
+    let { name, description, url, image, onInputChange, isFormValid, resetForm } = useForm(initialForm, validations);
 
- 
-
+    const location = useLocation();
+    console.log(location);
+    const data = location.state;
+    const imageUrl = data.data.image
 
     const [imageUpload, setImageUpload] = useState()
 
+    useEffect(() => {
+        setImageProduct(imageUrl)
+    },[imageUrl])
+
+
 
     const uploadImage = () => {
+
+
         if (imageUpload == null) return;
         const imageRef = ref(storage, `products-images/${imageUpload.name + v4()}`);
-        uploadBytes(imageRef, imageUpload).then(() => {
-            alert('Image of product was upload')
-            getDownloadURL(imageRef).then((url) => {
-                setImageProduct(url)
+        uploadBytes(imageRef, imageUpload)
+            .then(() => {
+                alert('Image of product was uploaded');
+                getDownloadURL(imageRef)
+                    .then((url) => {
+                        setImageProduct(url); // Actualizar imageProduct con la nueva URL
+                        console.log(url); // Asegúrate de que la URL se imprima correctamente
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching download URL:', error);
+                    });
             })
-                .catch((error) => {
-                    console.error('Error fetching download URL:', error);
-                });
-        })
+            .catch((error) => {
+                console.error('Error uploading image:', error);
+            });
     }
 
 
 
     const handleSubmitReview = () => {
         console.log(user)
+        console.log(data.id)
         var currentdate = new Date();
         var datetime = currentdate.getDate() + "/"
             + (currentdate.getMonth() + 1) + "/"
@@ -60,16 +98,16 @@ const ProductEdit = () => {
             + currentdate.getHours() + ":"
             + currentdate.getMinutes() + ":"
             + currentdate.getSeconds();
-
-        // const editedProduct = {
-        //     _id: '',
-        //     name: name,
-        //     description: description,
-        //     url: url,
-        //     userId: user.uid,
-        //     image: imageProduct,
-        //     updateAt: datetime
-        // }
+       
+        const editedProduct = {
+            createdAt: data.data.createdAt,
+            description: description,
+            updatedAt: new Date().toISOString(),
+            url: url,
+            id: data.id,
+            userId: user.uid,
+            image: imageProduct
+        };
 
         editProduct(editedProduct);
     };
@@ -98,26 +136,19 @@ const ProductEdit = () => {
                     <div className='col-6'>
                         <div className="card-body">
                             <h5 className=" card-title">Name of product</h5>
-                            <input type='text' id='name' name='name' className='form-control' value={name} onChange={onInputChange} />
+                            <input type='text' id='name' name='name' className='form-control' placeholder={data.data.name} value={name} onChange={onInputChange} />
                         </div>
                         <div className='col-6'>
                             <h5 className='py-3 card-title'>Description</h5>
-                            <textarea
-                                id="description"
-                                name="description"
-                                className="form-control"
-                                value={description}
-                                onChange={onInputChange}
-                                rows={4}
-                            />
+                            <textarea id="description" name="description" className="form-control" placeholder={data.data.description} value={description} onChange={onInputChange} rows={4} />
                         </div>
                         <div className='col-6'>
                             <h5 className='py-3 card-title'>Url of product</h5>
-                            <input type='text' id='url' name='url' className='form-control' value={url} onChange={onInputChange} />
+                            <input type='text' id='url' name='url' className='form-control' placeholder={data.data.url} value={url} onChange={onInputChange} />
                         </div>
                         <div className='col-6'>
                             <div className='py-3'>
-                                <button type="button" className="btn  btn-primary" onClick={handleSubmitReview}>Send your review</button>
+                                <button type="button" className="btn btn-primary" onClick={handleSubmitReview}>Edit</button>
                             </div>
                         </div>
                     </div>

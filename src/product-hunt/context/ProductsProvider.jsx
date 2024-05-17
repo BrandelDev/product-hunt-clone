@@ -19,7 +19,7 @@ export const ProductsProvider = ({ children }) => {
 
   const saveProduct = async (product) => {
     try {
-      console.log(FirebaseDB)
+    
       const newDocRef = doc(collection(FirebaseDB, `${user.uid}/collection/products`));
       console.log(newDocRef)
       await setDoc(newDocRef, product);
@@ -50,7 +50,7 @@ export const ProductsProvider = ({ children }) => {
 
     try {
       await deleteDoc(doc(FirebaseDB, `${user.uid}/collection/products`, productId));
-      const action = { type:productTypes.deleteProduct, payload: productId} 
+      const action = { type: productTypes.deleteProduct, payload: productId }
       dispatch(action)
 
       alert('The product was be deleted');
@@ -84,9 +84,44 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+  const getAllUserIds = async () => {
+    try {
+      const usersCollectionRef = collection(FirebaseDB, 'users');
+      const usersSnapshot = await getDocs(usersCollectionRef);
+      return usersSnapshot.docs.map(doc => doc.id);
+    } catch (error) {
+      console.error('Error obteniendo IDs de usuarios:', error);
+      return [];
+    }
+  };
+
+   const getAllProducts = async () => {
+    try {
+      const productos = [];
+      const userIds = await getAllUserIds();
+  
+      for (const userId of userIds) {
+        const productsCollectionRef = collection(FirebaseDB, `${userId}/collection/products`);
+        const productsSnapshot = await getDocs(productsCollectionRef);
+  
+        productsSnapshot.forEach((doc) => {
+          productos.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+      }
+  
+      return productos;
+    } catch (error) {
+      console.error('Error obteniendo documentos de productos:', error);
+      return [];
+    }
+};
+
 
   return (
-    <ProductContext.Provider value={{ ...productsState, saveProduct, getProducts, deleteProduct, editProduct }}>
+    <ProductContext.Provider value={{ ...productsState, saveProduct, getProducts, deleteProduct, editProduct, getAllProducts }}>
       {children}
     </ProductContext.Provider>
   );

@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email = '', password = '') => {
         const { ok, uid, displayName, photoURL, errorMessage } = await authUserWithEmailPassword(email, password);
-
+     
 
         if (!ok) {
             dispatch({ type: types.error, payload: { errorMessage } });
@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         const payload = { ok, uid, email, displayName, photoURL };
+     
         console.log(payload)
         localStorage.setItem('user', JSON.stringify(payload));
 
@@ -43,14 +44,14 @@ export const AuthProvider = ({ children }) => {
 
     const loginGoogle = async () => {
         const { ok, uid, displayName, photoURL, errorMessage, email } = await signInWithGoogle();
-
-
+      
         if (!ok) {
             dispatch({ type: types.error, payload: { errorMessage } });
             return false;
         }
 
         const payload = { ok, uid, email, displayName, photoURL };
+
         console.log(payload)
         localStorage.setItem('user', JSON.stringify(payload));
 
@@ -71,6 +72,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(payload));
     
         const action = { type: types.login, payload: payload }
+     
     
         dispatch(action);
     

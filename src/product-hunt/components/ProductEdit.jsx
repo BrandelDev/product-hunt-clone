@@ -106,7 +106,8 @@ const ProductEdit = () => {
             url: url,
             id: data.id,
             userId: user.uid,
-            image: imageProduct
+            image: imageProduct,
+            name: name
         };
 
         editProduct(editedProduct);

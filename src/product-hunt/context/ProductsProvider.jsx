@@ -27,6 +27,7 @@ export const ProductsProvider = ({ children }) => {
 
       const action = { type: productTypes.saveProduct, payload: product };
       dispatch(action); // Actualizar el estado después de guardar el producto
+      alert("Your product was be post");
 
     } catch (error) {
       console.error('Error saving product:', error);
@@ -38,6 +39,7 @@ export const ProductsProvider = ({ children }) => {
       );
       const action = { type: productTypes.updateProduct, payload: product }
       dispatch(action)
+      alert("Your product was be update correctly");
       console.log('Producto actualizado correctamente');
     } catch (error) {
       console.error('Error al actualizar el producto:', error);
@@ -47,9 +49,10 @@ export const ProductsProvider = ({ children }) => {
 
 
   const deleteProduct = async (productId) => {
+    console.log(productId)
 
     try {
-      await deleteDoc(doc(FirebaseDB, `${user.uid}/collection/products`, productId));
+      await deleteDoc(doc(FirebaseDB, `${user.uid}/collection/products`, productId.id));
       const action = { type: productTypes.deleteProduct, payload: productId }
       dispatch(action)
 

@@ -41,11 +41,12 @@ export const Navbar = () => {
 
                 <div className="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                     <ul className="navbar-nav">
-                        <li className="nav-item active">
+                        <li className="nav-item">
                             <a className="nav-link" >Launches</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link">Products</a>
+
+                        <Link className="nav-link" to="/">Products</Link>
                         </li>
 
                         <li className="nav-item">

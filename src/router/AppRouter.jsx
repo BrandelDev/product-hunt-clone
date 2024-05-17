@@ -8,6 +8,7 @@ import { Navbar } from '../../src/ui/components';
 import UserView from '../product-hunt/components/UserView'
 import { ProductsProvider } from '../product-hunt/context/ProductsProvider'
 import ProductEdit from '../product-hunt/components/ProductEdit'
+import { HomePage } from '../product-hunt/pages'
 
 
 
@@ -25,6 +26,16 @@ export const AppRouter = () => {
                                 <ProductHuntRouter />
                             </ProductsProvider>
                         </PublicRouter>
+                    }
+                ></Route>
+                <Route
+                    path='/' element={
+                        <PrivateRouter>
+                            <ProductsProvider>
+                                <HomePage />
+                            </ProductsProvider>
+
+                        </PrivateRouter>
                     }
                 ></Route>
 

@@ -18,6 +18,10 @@ export const TopProducts = () => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [newReview, setNewReview] = useState({ content: '', rate: 0 });
+    const handleReviewChange = (e) => {
+        setNewReview({ ...newReview, [e.target.name]: e.target.value });
+      };
 
     const fetchProducts = async () => {
         const fetchedProducts = await getAllProducts();
@@ -142,33 +146,47 @@ export const TopProducts = () => {
                                         <div className='d-flex'>
                                             <button className='btn btn-success mx-3'>Visit</button>
                                             <button className='btn btn-warning'>
-                                             UPVOTE
+                                                UPVOTE
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div className='row'>
-                                    <hr/>
+                                    <hr />
                                     <div className='col-lg-6'>
-                                    <label>What do you think?</label>
+                                        <label>What do you think?</label>
+                                     
                                     </div>
                                     <div className='col-lg-6 align-items-center d-flex'>
                                         <button className='btn btn-primary '>Login to comment</button>
                                     </div>
-                                    <hr/>
+                                    <hr />
                                 </div>
                                 <div className='row'>
+                                    <label>Review</label>
+                                <select className='form-control'
+                                            name="rate"
+                                            value={newReview.rate}
+                                            onChange={handleReviewChange}
+                                        >
+                                            <option value="0">0</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
                                     <h3>Comments</h3>
                                     <textarea></textarea>
                                 </div>
-                              
+
                             </div>
 
 
                         </div>
                         <div className='row mt-3'>
                             <div className='col-lg-12  d-flex justify-content-end '>
-                            <button className='btn btn-warning' onClick={closeModal}>close</button>
+                                <button className='btn btn-warning' onClick={closeModal}>close</button>
                             </div>
                         </div>
                     </div>

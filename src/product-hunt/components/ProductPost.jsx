@@ -96,7 +96,7 @@ export const ProductPost = () => {
                 </div>
                 <div className='col-6'>
                     <div className="card-body">
-                        <h5 className=" card-title">Name of product</h5>
+                        <h5 className=" card-title mb-3">Name of product</h5>
                         <input type='text' id='name' name='name' className='form-control' value={name} onChange={onInputChange} />
                     </div>
                     <div className='col-6'>

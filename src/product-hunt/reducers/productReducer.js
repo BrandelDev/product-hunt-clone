@@ -11,7 +11,7 @@ export const productReducer = (state = {}, action) => {
         case productTypes.deleteProduct:
             return {
                 ...state,
-                products: state.products.push(action.payload) ?? ''
+                products: state.products
             }
         default:
             return state;

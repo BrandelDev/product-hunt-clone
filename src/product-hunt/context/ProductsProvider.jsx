@@ -2,13 +2,14 @@ import React, { useContext, useReducer } from 'react';
 import { productReducer } from '../reducers';
 import { AuthContext, types } from '../../auth';
 import { doc } from 'firebase/firestore';
-import { collection, setDoc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, setDoc, getDocs, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { FirebaseDB } from '../../firebase/config';
 import { productTypes } from "../types";
 import { ProductContext } from './ProductContext';
 
 const initialState = {
-  products: []
+  products: [],
+  productsComment: {}
 };
 
 
@@ -19,7 +20,7 @@ export const ProductsProvider = ({ children }) => {
 
   const saveProduct = async (product) => {
     try {
-    
+
       const newDocRef = doc(collection(FirebaseDB, `${user.uid}/collection/products`));
       console.log(newDocRef)
       await setDoc(newDocRef, product);
@@ -98,15 +99,15 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
-   const getAllProducts = async () => {
+  const getAllProducts = async () => {
     try {
       const productos = [];
       const userIds = await getAllUserIds();
-  
+
       for (const userId of userIds) {
         const productsCollectionRef = collection(FirebaseDB, `${userId}/collection/products`);
         const productsSnapshot = await getDocs(productsCollectionRef);
-  
+
         productsSnapshot.forEach((doc) => {
           productos.push({
             id: doc.id,
@@ -114,17 +115,66 @@ export const ProductsProvider = ({ children }) => {
           });
         });
       }
-  
+
       return productos;
     } catch (error) {
       console.error('Error obteniendo documentos de productos:', error);
       return [];
     }
-};
+  };
+
+  const addComment = async (productId, content, rate, user) => {
+    console.log(user)
+    try {
+      const newCommentRef = doc(collection(FirebaseDB, `products/${productId}/comments`));
+      const commentData = {
+        userDisplayName: user.displayName,
+        userPhotoUrl: user.photoURL,
+        userId: user.uid,
+        content,
+        rate,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+      await setDoc(newCommentRef, commentData);
+
+      dispatch({
+        type: productTypes.addComment,
+        payload: { productId, commentData }
+      });
+
+      alert("Your comment was added");
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  };
+
+  const getProductComments = async (productId) => {
+    try {
+      const comments = {};
+      const commentsCollectionRef = collection(FirebaseDB, `products/${productId}/comments`);
+      const commentsSnapshot = await getDocs(commentsCollectionRef);
+
+      commentsSnapshot.forEach((doc) => {
+        comments[doc.id] = doc.data();
+      });
+
+      dispatch({
+        type: productTypes.setComment,
+        payload: { productId, comments }
+      });
+
+      return comments;
+    } catch (error) {
+      console.error('Error getting product comments:', error);
+      return {};
+    }
+  };
+
 
 
   return (
-    <ProductContext.Provider value={{ ...productsState, saveProduct, getProducts, deleteProduct, editProduct, getAllProducts }}>
+    <ProductContext.Provider value={{ ...productsState, saveProduct, getProducts, deleteProduct, editProduct, getAllProducts, getProductComments, addComment }}>
       {children}
     </ProductContext.Provider>
   );

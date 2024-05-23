@@ -46,6 +46,7 @@ const ProductEdit = () => {
 
     const { editProduct } = useContext(ProductContext)
     const { user } = useContext(AuthContext);
+    
 
     const [imageProduct, setImageProduct] = useState()
 

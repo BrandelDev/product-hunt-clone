@@ -1,5 +1,4 @@
-import { CreateProfilePage } from "../../auth/pages/CreateProfilePage";
-import SignInPage from "../../auth/pages/SignInPage";
+
 import { TopProducts } from "../components/TopProducts";
 
 export const HomePage = () => {

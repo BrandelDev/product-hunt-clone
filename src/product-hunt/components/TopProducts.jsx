@@ -9,18 +9,32 @@ import best from '../../assets/Home/best.jpg';
 import './TopProducts.css';
 
 export const TopProducts = () => {
-    const { getAllProducts } = useContext(ProductContext);
+    const { getAllProducts, getCommentCount } = useContext(ProductContext);
+
     const [products, setProducts] = useState([]);
+    const [commentCounts, setCommentCounts] = useState({});
     const { user } = useContext(AuthContext);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     const fetchProducts = async () => {
         const fetchedProducts = await getAllProducts();
-        console.log(fetchedProducts);
         setProducts(fetchedProducts);
     };
 
+    useEffect(() => {
+        const fetchCommentCounts = async () => {
+            const counts = {};
+            for (const product of products) {
+                counts[product.id] = await getCommentCount(product.id);
+                
+            }
+            setCommentCounts(counts);
+        };
+
+        fetchCommentCounts();
+    }, [products, getCommentCount]);
+    
     const openModal = (product) => {
         console.log(product);
         setSelectedProduct(product);
@@ -57,8 +71,8 @@ export const TopProducts = () => {
                     <div className='col-md-2 text-center'>
                         <button type="button" data-test="vote-button" className="buttom-up">
                             <div className="flex flex-col items-center">
-                                {/* <img src={iconUp} width='20px' />
-                                <div className="">{item.numberOfComments}</div> */}
+                                <img src={iconUp} width='20px' />
+                                <div className="">{commentCounts[item.id] || 0}</div>
                             </div>
                         </button>
                     </div>

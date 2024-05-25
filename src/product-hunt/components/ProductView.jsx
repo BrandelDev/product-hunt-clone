@@ -5,16 +5,18 @@ import Modal from 'react-modal';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const ProductView = ({ product, isOpen, onClose }) => {
-    const { addComment, getProductComments, productsComment } = useContext(ProductContext);
+    const { addComment, getProductComments, productsComment, followUser } = useContext(ProductContext);
     const { user, logged } = useContext(AuthContext);
     const [newReview, setNewReview] = useState({ content: '', rate: 0 });
-    
+
+
 
     useEffect(() => {
         if (isOpen && product) {
             getProductComments(product.id);
         }
     }, [isOpen, product, getProductComments]);
+
 
     const handleReviewChange = (e) => {
 
@@ -24,11 +26,21 @@ const ProductView = ({ product, isOpen, onClose }) => {
         });
     };
 
+  
+
     const handleAddComment = async () => {
         if (user) {
             await addComment(product.id, newReview.content, newReview.rate, user);
             setNewReview({ content: '', rate: 0 });
         } else {
+            alert('You need to be logged in to add a comment.');
+        }
+    };
+
+    const handleFollowUser = async () => {
+        if(user){
+            await followUser(user.uid)
+        }else{
             alert('You need to be logged in to add a comment.');
         }
     };
@@ -48,7 +60,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
                     <div className='row'>
                         <div className='col-lg-3'></div>
                         <div className='col-lg-6'>
-                            <img width='100px' src={product.data.image} alt={product.data.name} />
+                            <img width='150px' src={product.data.image} alt={product.data.name} />
                             <div className='row'>
                                 <div className='col-lg-6'>
                                     <h3>{product.data.name}</h3>
@@ -102,12 +114,19 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                         <div className='row'>
                                             <div className='col-lg-12'>Comments by other users</div>
                                             {productsComment[product.id] && Object.keys(productsComment[product.id]).map(commentId => (
-                                                <div key={commentId}>
-                                                    <strong>{productsComment[product.id][commentId].userDisplayName}:</strong>
-                                                    <p>{productsComment[product.id][commentId].content}</p>
-                                                    <p>Rate: {productsComment[product.id][commentId].rate}</p>
-                                                    <p>Created at: {productsComment[product.id][commentId].createdAt?.toDate() ? new Date(productsComment[product.id][commentId].createdAt.seconds * 1000).toString() : 'Unknown'}</p>
-                                                    <p>Updated at: {productsComment[product.id][commentId].updatedAt?.toDate() ? new Date(productsComment[product.id][commentId].updatedAt.seconds * 1000).toString() : 'Unknown'}</p>
+                                                <div key={commentId} className="card mb-3 d-flex">
+                                                    <div className='d-flex py-2 justify-content-between'>
+                                                    <img width='40px' src={productsComment[product.id][commentId].userPhotoUrl}></img>
+                                                    <h5 className="card-title">{productsComment[product.id][commentId].userDisplayName}</h5>
+                                                    <button width='' onClick={handleFollowUser} className='btn btn-warning'>Follow</button>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        
+                                                        <h6 className="card-subtitle mb-2 text-muted">Rate: {productsComment[product.id][commentId].rate}</h6>
+                                                        <p className="card-text">{productsComment[product.id][commentId].content}</p>
+                                                        <p className="card-text"><small className="text-muted">Created at: {productsComment[product.id][commentId].createdAt?.toDate ? new Date(productsComment[product.id][commentId].createdAt.seconds * 1000).toLocaleString() : 'Unknown'}</small></p>
+                                                        <p className="card-text"><small className="text-muted">Updated at: {productsComment[product.id][commentId].updatedAt?.toDate ? new Date(productsComment[product.id][commentId].updatedAt.seconds * 1000).toLocaleString() : 'Unknown'}</small></p>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>

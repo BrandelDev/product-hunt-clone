@@ -32,7 +32,7 @@ export const productReducer = (state = {}, action) => {
                     }
                 }
             }
-            
+
         case productTypes.setComment:
             const { productId: pid, comments } = action.payload;
             return {
@@ -42,6 +42,16 @@ export const productReducer = (state = {}, action) => {
                     [pid]: comments
                 }
             };
+        case productTypes.followUser:
+            return {
+                ...state,
+                youFollow: [state.youFollow, action.payload]
+            }
+        case productTypes.unFollowUser:
+            return {
+                ...state,
+                youFollow: state.youFollow.filter(userId => userId !== action.payload)
+            }
         default:
             return state;
     }

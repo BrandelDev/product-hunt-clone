@@ -2,14 +2,16 @@ import React, { useContext, useReducer } from 'react';
 import { productReducer } from '../reducers';
 import { AuthContext, types } from '../../auth';
 import { doc } from 'firebase/firestore';
-import { collection, setDoc, getDocs, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, setDoc, getDocs, deleteDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { FirebaseDB } from '../../firebase/config';
 import { productTypes } from "../types";
 import { ProductContext } from './ProductContext';
 
 const initialState = {
   products: [],
-  productsComment: {}
+  productsComment: {},
+  followers: [],
+  youFollow: []
 };
 
 
@@ -149,6 +151,17 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+  const getCommentCount = async (productId) => {
+    try {
+      const commentsCollectionRef = collection(FirebaseDB, `products/${productId}/comments`);
+      const commentsSnapshot = await getDocs(commentsCollectionRef);
+      return commentsSnapshot.size;
+    } catch (error) {
+      console.error('Error getting comment count:', error);
+      return 0;
+    }
+  };
+
   const getProductComments = async (productId) => {
     try {
       const comments = {};
@@ -171,10 +184,72 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+  const followUser = async (userIdToFollow) => {
+    try {
+      const userDocRef = doc(FirebaseDB, `users/${user.uid}`);
+      const userToFollowDocRef = doc(FirebaseDB, `users/${userIdToFollow}`);
+
+      await updateDoc(userDocRef, { youFollow: arrayUnion(userIdToFollow) });
+      await updateDoc(userToFollowDocRef, { followers: arrayUnion(user.uid) });
+
+      alert('You follow:' + user.displayName)
+
+      dispatch({ type: productTypes.followUser, payload: userIdToFollow });
+    } catch (error) {
+      console.error('Error following user:', error);
+    }
+  };
+
+  const unfollowUser = async (userIdToUnfollow) => {
+    try {
+      const userDocRef = doc(FirebaseDB, `users/${user.uid}`);
+      const userToUnfollowDocRef = doc(FirebaseDB, `users/${userIdToUnfollow}`);
+
+      await updateDoc(userDocRef, { youFollow: arrayRemove(userIdToUnfollow) });
+      await updateDoc(userToUnfollowDocRef, { followers: arrayRemove(user.uid) });
+
+      dispatch({ type: productTypes.unfollowUser, payload: userIdToUnfollow });
+    } catch (error) {
+      console.error('Error unfollowing user:', error);
+    }
+  };
+
+  const getFollowersAndFollowings = async (userId) => {
+    try {
+      const userDocRef = doc(FirebaseDB, `users/${userId}`);
+      const userDocSnapshot = await getDoc(userDocRef);
+
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        return {
+          followers: userData.followers || [],
+          followings: userData.youFollow || []
+        };
+      }
+      return { followers: [], followings: [] };
+    } catch (error) {
+      console.error('Error getting followers and followings:', error);
+      return { followers: [], followings: [] };
+    }
+  };
+
 
 
   return (
-    <ProductContext.Provider value={{ ...productsState, saveProduct, getProducts, deleteProduct, editProduct, getAllProducts, getProductComments, addComment }}>
+    <ProductContext.Provider value={{
+      ...productsState,
+      saveProduct,
+      getProducts,
+      deleteProduct,
+      editProduct,
+      getAllProducts,
+      getProductComments,
+      addComment,
+      getCommentCount,
+      followUser,
+      unfollowUser,
+      getFollowersAndFollowings
+    }}>
       {children}
     </ProductContext.Provider>
   );

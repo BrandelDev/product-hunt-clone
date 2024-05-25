@@ -4,6 +4,7 @@ import  ProductEdit from '../components/ProductEdit';
 import { ProductPost } from '../components/ProductPost';
 import UserView from '../components/UserView';
 import { HomePage } from '../pages';
+import UserFollowers from '../components/UserFollowers';
 
 
 export const ProductHuntRouter = () => { 
@@ -37,6 +38,12 @@ export const ProductHuntRouter = () => {
                         </ProductsProvider>
                 }>
                 </Route>
+
+                <Route path="/user-view/following-follows" element={
+                    <ProductsProvider>
+                        <UserFollowers/>
+                    </ProductsProvider>
+                }></Route>
                
             </Routes>
 

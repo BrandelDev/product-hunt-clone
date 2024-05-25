@@ -43,11 +43,10 @@ const UserView = () => {
                             <li key={products.id} className="list-group-item mb-3">
                                 <div className='row'>
                                     <div className='col-lg-1 me-2'>
-                                        <h4>{products.data.name}</h4>
                                         <img width='50px' src={products.data.image} />
                                     </div>
                                     <div className='col'>
-
+                                        <h4>{products.data.name}</h4>
                                         <p>{products.data.description}</p>
 
                                         <button className="btn btn-sm btn-primary mx-2" onClick={() => handleEditClick(products)}>Edit</button>
@@ -62,14 +61,7 @@ const UserView = () => {
                 </div>
                 <div className="col-md-6">
                     <div className="card d-flex flex-row my-2">
-                        <div className="card-body">
-                            <span>Your followers</span><br />
-                            <span>5</span>
-                        </div>
-                        <div className="card-body">
-                            <span>You Follow</span><br />
-                            <span>5</span>
-                        </div>
+                    <Link className="nav-link" to="/user-view/following-follows">Followers</Link>
                     </div>
                     <div className="card">
                         <div className="card-body">

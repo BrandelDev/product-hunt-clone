@@ -17,7 +17,7 @@ export const signInWithGoogle = async () => {
 
         if (uid) {
             const userDocRef = doc(FirebaseDB, 'users', uid);
-            await setDoc(userDocRef, { email }, { merge: true });
+            await setDoc(userDocRef, { email, uid, displayName, photoURL }, { merge: true });
           }
 
         return {
@@ -42,13 +42,13 @@ export const registerUser = async ({ email, password, displayName }) => {
     try {
       const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
   
-      const { uid, photoURL } = resp.user
+      const { uid, photoURL, displayName } = resp.user
   
       await updateProfile(FirebaseAuth.currentUser, { displayName });
 
       if (uid) {
         const userDocRef = doc(FirebaseDB, 'users', uid);
-        await setDoc(userDocRef, { email }, { merge: true });
+        await setDoc(userDocRef, { email, uid, photoURL, displayName }, { merge: true });
       }
   
       return {
@@ -75,7 +75,7 @@ export const authUserWithEmailPassword = async (email, password) => {
 
         if (uid) {
             const userDocRef = doc(FirebaseDB, 'users', uid);
-            await setDoc(userDocRef, { email }, { merge: true });
+            await setDoc(userDocRef, { email, uid, displayName, photoURL  }, { merge: true });
           }
 
 

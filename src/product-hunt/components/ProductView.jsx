@@ -37,9 +37,9 @@ const ProductView = ({ product, isOpen, onClose }) => {
         }
     };
 
-    const handleFollowUser = async () => {
+    const handleFollowUser = async (userId) => {
         if(user){
-            await followUser(user.uid)
+            await followUser(userId)
         }else{
             alert('You need to be logged in to add a comment.');
         }
@@ -118,7 +118,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                                     <div className='d-flex py-2 justify-content-between'>
                                                     <img width='40px' src={productsComment[product.id][commentId].userPhotoUrl}></img>
                                                     <h5 className="card-title">{productsComment[product.id][commentId].userDisplayName}</h5>
-                                                    <button width='' onClick={handleFollowUser} className='btn btn-warning'>Follow</button>
+                                                    <button width='' onClick={ ()=> handleFollowUser(productsComment[product.id][commentId].userId)} className='btn btn-warning'>Follow</button>
                                                     </div>
                                                     <div className="card-body">
                                                         

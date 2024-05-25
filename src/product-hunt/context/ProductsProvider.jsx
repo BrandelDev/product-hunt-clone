@@ -2,7 +2,7 @@ import React, { useContext, useReducer } from 'react';
 import { productReducer } from '../reducers';
 import { AuthContext, types } from '../../auth';
 import { doc } from 'firebase/firestore';
-import { collection, setDoc, getDocs, deleteDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { collection, setDoc, getDocs, getDoc, deleteDoc, updateDoc, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { FirebaseDB } from '../../firebase/config';
 import { productTypes } from "../types";
 import { ProductContext } from './ProductContext';
@@ -101,6 +101,20 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+  const getAllUsers = async () => {
+    try {
+      const usersCollectionRef = collection(FirebaseDB, 'users');
+      const usersSnapshot = await getDocs(usersCollectionRef);
+      return usersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      console.error('Error obteniendo IDs de usuarios:', error);
+      return [];
+    }
+  };
+
   const getAllProducts = async () => {
     try {
       const productos = [];
@@ -189,10 +203,14 @@ export const ProductsProvider = ({ children }) => {
       const userDocRef = doc(FirebaseDB, `users/${user.uid}`);
       const userToFollowDocRef = doc(FirebaseDB, `users/${userIdToFollow}`);
 
-      await updateDoc(userDocRef, { youFollow: arrayUnion(userIdToFollow) });
-      await updateDoc(userToFollowDocRef, { followers: arrayUnion(user.uid) });
-
-      alert('You follow:' + user.displayName)
+      if (userIdToFollow === user.uid) {
+       alert('You not follow to self.');
+      } else { 
+        await updateDoc(userDocRef, { following: arrayUnion(userIdToFollow) });
+        await updateDoc(userToFollowDocRef, { followers: arrayUnion(user.uid) });
+        alert('You follow:' + user.displayName)
+      }
+      
 
       dispatch({ type: productTypes.followUser, payload: userIdToFollow });
     } catch (error) {
@@ -215,15 +233,18 @@ export const ProductsProvider = ({ children }) => {
   };
 
   const getFollowersAndFollowings = async (userId) => {
+    console.log(userId)
     try {
       const userDocRef = doc(FirebaseDB, `users/${userId}`);
       const userDocSnapshot = await getDoc(userDocRef);
 
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
+        console.log(userData)
         return {
+          
           followers: userData.followers || [],
-          followings: userData.youFollow || []
+          following: userData.following || []
         };
       }
       return { followers: [], followings: [] };
@@ -248,7 +269,8 @@ export const ProductsProvider = ({ children }) => {
       getCommentCount,
       followUser,
       unfollowUser,
-      getFollowersAndFollowings
+      getFollowersAndFollowings,
+      getAllUsers
     }}>
       {children}
     </ProductContext.Provider>

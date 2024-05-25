@@ -8,13 +8,17 @@ const ProductView = ({ product, isOpen, onClose }) => {
     const { addComment, getProductComments, productsComment, followUser } = useContext(ProductContext);
     const { user, logged } = useContext(AuthContext);
     const [newReview, setNewReview] = useState({ content: '', rate: 0 });
-
+    const [averageRating, setAverageRating] = useState(0)
+    
+    
 
 
     useEffect(() => {
         if (isOpen && product) {
             getProductComments(product.id);
+            calculateAvergareRating()
         }
+
     }, [isOpen, product, getProductComments]);
 
 
@@ -26,7 +30,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
         });
     };
 
-  
+
 
     const handleAddComment = async () => {
         if (user) {
@@ -38,15 +42,31 @@ const ProductView = ({ product, isOpen, onClose }) => {
     };
 
     const handleFollowUser = async (userId) => {
-        if(user){
+        if (user) {
             await followUser(userId)
-        }else{
+        } else {
             alert('You need to be logged in to add a comment.');
         }
     };
 
     if (!isOpen) {
         return null;
+    }
+
+    const calculateAvergareRating = () =>{
+        let totalRate = 0;
+        let totalObjects = 0;
+        for (const key in productsComment) {
+            const innerObj = productsComment[key];
+            for (const innerKey in innerObj) {
+              totalRate += parseInt(innerObj[innerKey].rate);
+              totalObjects++;
+            }
+          }
+          console.log(totalRate)
+          const averageRating = totalRate / totalObjects;
+          
+          setAverageRating(averageRating);
     }
 
     return (
@@ -68,8 +88,17 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                 </div>
                                 <div className='col-lg-6'>
                                     <div className='d-flex'>
-                                        <button className='btn btn-success mx-3'>Visit</button>
-                                        <button className='btn btn-warning'>UPVOTE</button>
+                                        <div>
+                                            <button className='btn btn-success mx-3'>Visit</button>
+                                        </div>
+                                        <div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5>Average rating:</h5>
+                                                    <h5 className='text-center'>{averageRating}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -116,12 +145,12 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                             {productsComment[product.id] && Object.keys(productsComment[product.id]).map(commentId => (
                                                 <div key={commentId} className="card mb-3 d-flex">
                                                     <div className='d-flex py-2 justify-content-between'>
-                                                    <img width='40px' src={productsComment[product.id][commentId].userPhotoUrl}></img>
-                                                    <h5 className="card-title">{productsComment[product.id][commentId].userDisplayName}</h5>
-                                                    <button width='' onClick={ ()=> handleFollowUser(productsComment[product.id][commentId].userId)} className='btn btn-warning'>Follow</button>
+                                                        <img width='40px' src={productsComment[product.id][commentId].userPhotoUrl} />
+                                                        <h5 className="card-title">{productsComment[product.id][commentId].userDisplayName}</h5>
+                                                        <button width='' onClick={() => handleFollowUser(productsComment[product.id][commentId].userId)} className='btn btn-warning'>Follow</button>
                                                     </div>
                                                     <div className="card-body">
-                                                        
+
                                                         <h6 className="card-subtitle mb-2 text-muted">Rate: {productsComment[product.id][commentId].rate}</h6>
                                                         <p className="card-text">{productsComment[product.id][commentId].content}</p>
                                                         <p className="card-text"><small className="text-muted">Created at: {productsComment[product.id][commentId].createdAt?.toDate ? new Date(productsComment[product.id][commentId].createdAt.seconds * 1000).toLocaleString() : 'Unknown'}</small></p>

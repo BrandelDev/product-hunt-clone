@@ -198,6 +198,8 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+
+
   const followUser = async (userIdToFollow) => {
     try {
       const userDocRef = doc(FirebaseDB, `users/${user.uid}`);

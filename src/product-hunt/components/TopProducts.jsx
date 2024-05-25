@@ -11,30 +11,62 @@ import './TopProducts.css';
 export const TopProducts = () => {
     const { getAllProducts, getCommentCount } = useContext(ProductContext);
 
+    const [category, setCategory] = useState('');
+    const [name, setName] = useState('');
+    const [rating, setRating] = useState('');
     const [products, setProducts] = useState([]);
     const [commentCounts, setCommentCounts] = useState({});
     const { user } = useContext(AuthContext);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     const fetchProducts = async () => {
         const fetchedProducts = await getAllProducts();
         setProducts(fetchedProducts);
+
     };
+
+    const handleFilterChange = () => {
+        fetchProducts();
+    }
+
+    useEffect(() => {
+        handleFilterChange();
+    }, [category, name, rating]);
+
+
+    let filterProducts = () => {
+        setFilteredProducts(products.filter(product => {
+            const matchCategory = category === '' || product.category === category;
+            const matchName = name === '' || product.name.toLowerCase().includes(name.toLowerCase());
+            return matchCategory && matchName
+        }));
+    };
+
 
     useEffect(() => {
         const fetchCommentCounts = async () => {
             const counts = {};
             for (const product of products) {
                 counts[product.id] = await getCommentCount(product.id);
-                
             }
             setCommentCounts(counts);
         };
 
         fetchCommentCounts();
     }, [products, getCommentCount]);
-    
+
+    useEffect(() => {
+        setFilteredProducts(products.filter(product => {
+            console.log(name)
+            const matchCategory = category === '' || product.data.category === category;
+            const matchName = name === '' || product.data.name.toLowerCase().includes(name.toLowerCase());
+            return matchCategory && matchName
+        }));
+    }, [category, name, products]);
+
+
     const openModal = (product) => {
         console.log(product);
         setSelectedProduct(product);
@@ -48,13 +80,69 @@ export const TopProducts = () => {
 
     useEffect(() => {
         fetchProducts();
+        console.log(filteredProducts)
+
     }, []);
 
+    const categories = [
+        "Electronics",
+        "Home and Kitchen",
+        "Fashion and Accessories",
+        "Health and Beauty",
+        "Sports and Outdoors",
+        "Toys and Games",
+        "Books and Media",
+        "Automotive and Motorcycles",
+        "Baby and Kids",
+        "Food and Beverages",
+        "Pets",
+        "Tools and Home Improvement",
+        "Office Supplies and Stationery",
+        "Travel and Luggage",
+        "Industrial and Scientific"
+    ];
 
 
     return (
         <>
-            {products.map((item) => (
+            <div className='row py-2'>
+                <h5>Filter Products</h5>
+                <div className=' d-flex justify-content-between'>
+                    <div className='d-flex flex-column'>
+                        <label className='py-1'>Category:</label>
+                        <select className='form-control' value={category} onChange={(e) => setCategory(e.target.value)}>
+                            <option value="">Select a category</option>
+                            {categories.map((cat, index) => (
+                                <option key={index} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className='d-flex flex-column'>
+                        <label className='py-1'>Name:</label>
+                        <select className='form-control' value={name} onChange={(e) => setName(e.target.value)}>
+                            <option value="">Select a name</option>
+                            {products.map((item) => (
+                                <option key={item.id} value={item.data.name}>{item.data.name}</option>
+                            )
+                            )}
+                        </select>
+                    </div>
+                    <div className='d-flex flex-column'>
+                        <label className='py-1'>Rating:</label>
+                        <select className='form-control' value={rating} onChange={(e) => setRating(e.target.value)}>
+                            <option value="">Select a rating</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            {filteredProducts.map((item) => (
                 <div key={item.id} onClick={() => openModal(item)} className="row product d-flex align-items-center">
                     <div className="col-md-1 me-3">
                         <img width='48px' src={item.data.image} />
@@ -78,6 +166,8 @@ export const TopProducts = () => {
                     </div>
                 </div>
             ))}
+
+
 
             {selectedProduct && (
                 <ProductView

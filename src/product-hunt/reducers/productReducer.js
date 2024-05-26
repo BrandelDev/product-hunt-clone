@@ -52,6 +52,12 @@ export const productReducer = (state = {}, action) => {
                 ...state,
                 youFollow: state.youFollow.filter(userId => userId !== action.payload)
             }
+
+        case productTypes.resetComments:
+            return {
+                ...state,
+                productsComment: {}
+            };
         default:
             return state;
     }

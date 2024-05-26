@@ -5,22 +5,28 @@ import Modal from 'react-modal';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const ProductView = ({ product, isOpen, onClose }) => {
-    const { addComment, getProductComments, productsComment, followUser } = useContext(ProductContext);
+    const { addComment, getProductComments, productsComment, followUser, resetProductComments } = useContext(ProductContext);
     const { user, logged } = useContext(AuthContext);
     const [newReview, setNewReview] = useState({ content: '', rate: 0 });
     const [averageRating, setAverageRating] = useState(0)
-    
-    
 
 
     useEffect(() => {
-        if (isOpen && product) {
-            getProductComments(product.id);
-            calculateAvergareRating()
+        const fetchProductsComments = async () => {
+            if (isOpen && product) {
+                resetProductComments();
+                await getProductComments(product.id);
+                calculateAvergareRating()
+            }
         }
+        fetchProductsComments();
+    }, [product.id]);
 
-    }, [isOpen, product, getProductComments]);
+    useEffect(() => { 
+        calculateAvergareRating()
+    },[productsComment])
 
+    console.log(productsComment)
 
     const handleReviewChange = (e) => {
 
@@ -29,8 +35,6 @@ const ProductView = ({ product, isOpen, onClose }) => {
             [e.target.name]: e.target.value,
         });
     };
-
-
 
     const handleAddComment = async () => {
         if (user) {
@@ -41,9 +45,9 @@ const ProductView = ({ product, isOpen, onClose }) => {
         }
     };
 
-    const handleFollowUser = async (userId) => {
+    const handleFollowUser = async (userId, displayName) => {
         if (user) {
-            await followUser(userId)
+            await followUser(userId,displayName )
         } else {
             alert('You need to be logged in to add a comment.');
         }
@@ -53,26 +57,34 @@ const ProductView = ({ product, isOpen, onClose }) => {
         return null;
     }
 
-    const calculateAvergareRating = () =>{
+    const calculateAvergareRating = () => {
+
         let totalRate = 0;
         let totalObjects = 0;
         for (const key in productsComment) {
             const innerObj = productsComment[key];
             for (const innerKey in innerObj) {
-              totalRate += parseInt(innerObj[innerKey].rate);
-              totalObjects++;
+                totalRate += parseInt(innerObj[innerKey].rate);
+                totalObjects++;
             }
-          }
-          console.log(totalRate)
-          const averageRating = totalRate / totalObjects;
-          
-          setAverageRating(averageRating);
+        }
+        const averageRating = totalObjects > 0 ? (totalRate / totalObjects) : 0;
+
+        setAverageRating(Math.round((averageRating) * 100) / 100);
     }
+
+
+
+    const handleClose = () => {
+
+        onClose();
+    };
+
 
     return (
         <Modal
             isOpen={isOpen}
-            onRequestClose={onClose}
+            onRequestClose={handleClose}
             contentLabel="Detalles del Producto"
         >
             {product && (
@@ -95,7 +107,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5>Average rating:</h5>
-                                                    <h5 className='text-center'>{averageRating}</h5>
+                                                    <h5 className='text-center'>{averageRating}/5</h5>
                                                 </div>
                                             </div>
                                         </div>
@@ -130,24 +142,27 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                                 <option value="4">4</option>
                                                 <option value="5">5</option>
                                             </select>
+
+                                            <h5 className='py-1'>Submit a review</h5>
+                                            <textarea
+                                                className='form-control py-2'
+                                                name="content"
+                                                value={newReview.content}
+                                                onChange={handleReviewChange}
+                                            ></textarea>
                                         </div>
-                                        <h3 className='py-1'>Submit a review</h3>
-                                        <textarea
-                                            className='form-control py-2'
-                                            name="content"
-                                            value={newReview.content}
-                                            onChange={handleReviewChange}
-                                        ></textarea>
-                                        <button className='btn btn-primary my-2' onClick={handleAddComment}>Submit comment</button>
+                                        <div className='py-3'>
+                                            <button className='btn btn-primary my-2' onClick={handleAddComment}>Submit comment</button>
+                                        </div>
                                         <hr />
                                         <div className='row'>
-                                            <div className='col-lg-12'>Comments by other users</div>
+                                            <div className='col-lg-12 py-1'>Comments by other users</div>
                                             {productsComment[product.id] && Object.keys(productsComment[product.id]).map(commentId => (
                                                 <div key={commentId} className="card mb-3 d-flex">
                                                     <div className='d-flex py-2 justify-content-between'>
                                                         <img width='40px' src={productsComment[product.id][commentId].userPhotoUrl} />
                                                         <h5 className="card-title">{productsComment[product.id][commentId].userDisplayName}</h5>
-                                                        <button width='' onClick={() => handleFollowUser(productsComment[product.id][commentId].userId)} className='btn btn-warning'>Follow</button>
+                                                        <button width='' onClick={() => handleFollowUser(productsComment[product.id][commentId].userId, productsComment[product.id][commentId].userDisplayName )} className='btn btn-warning'>Follow</button>
                                                     </div>
                                                     <div className="card-body">
 
@@ -166,7 +181,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
                     </div>
                     <div className='row mt-3'>
                         <div className='col-lg-12 d-flex justify-content-end'>
-                            <button className='btn btn-warning' onClick={onClose}>Close</button>
+                            <button className='btn btn-warning' onClick={handleClose}>Close</button>
                         </div>
                     </div>
                 </div>

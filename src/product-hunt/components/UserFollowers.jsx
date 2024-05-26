@@ -22,15 +22,10 @@ const UserFollowers = () => {
                                
                 usersFollowers = users.filter(user => followers?.includes(user.uid));
                 usersFollowigns = users.filter(user => following?.includes(user.uid));
-                console.log(followers)
-                console.log(followings)
-                console.log(usersFollowers)
-                console.log(usersFollowigns)
                 setFollowers(usersFollowers);
                 setFollowings(usersFollowigns);
             }
-        };
-
+        }
         fetchFollowersAndFollowings();
     }, [user, getFollowersAndFollowings]);
 

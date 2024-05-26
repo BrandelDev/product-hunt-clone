@@ -5,6 +5,7 @@ export const productTypes = {
     deleteProduct: '[Product] delete',
     addComment: '[Product], addComment',
     setComment: '[Product] setComment',
+    resetComments: '[Product] resetComment',
     setUser: '[User] addComment',
     followUser: '[User] followUser',
     unFollowUser: '[User] unfollowUser',

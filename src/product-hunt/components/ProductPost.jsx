@@ -274,8 +274,8 @@ export const ProductPost = () => {
                     <div>
                         <h5 className='py-2'>Select Product Categories</h5>
                         <div>
-                            <label className='me-2' htmlFor="category">Category: </label>
-                            <select id="category" value={selectedCategory} onChange={handleCategoryChange}>
+                            <label className='me-2 py-1' htmlFor="category">Category: </label>
+                            <select id="category" className='form-control' value={selectedCategory} onChange={handleCategoryChange}>
                                 <option value="">Select a category</option>
                                 {categories.categories.map((category, index) => (
                                     <option key={index} value={category.name}>
@@ -287,7 +287,7 @@ export const ProductPost = () => {
                         {selectedCategory && (
                             <div>
                                 <label className='py-3 me-2' htmlFor="subcategory">Subcategory: </label>
-                                <select id="subcategory" value={selectedSubcategory} onChange={handleSubcategoryChange}>
+                                <select id="subcategory" className='form-control' value={selectedSubcategory} onChange={handleSubcategoryChange}>
                                     <option value="">Select a subcategory</option>
                                     {categories.categories
                                         .find((category) => category.name === selectedCategory)

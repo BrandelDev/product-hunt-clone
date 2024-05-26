@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const UserView = () => {
 
     const { getProducts, deleteProduct } = useContext(ProductContext);
+
     const [products, setProducts] = useState([]);
     const navigate = useNavigate();
 
@@ -60,10 +61,10 @@ const UserView = () => {
                     </ul>
                 </div>
                 <div className="col-md-6">
-                    <div className="card d-flex flex-row my-2">
-                    <Link className="nav-link" to="/user-view/following-follows">Followers</Link>
+                    <div className="card d-flex flex-row p-2">
+                        <Link to="/user-view/following-follows">Followers and following</Link>
                     </div>
-                    <div className="card">
+                    <div className="card mt-2">
                         <div className="card-body">
                             <span>Do want create a new product?</span><br />
                             <Link to="/user-logged/post-product">Create</Link>

@@ -9,7 +9,7 @@ import best from '../../assets/Home/best.jpg';
 import './TopProducts.css';
 
 export const TopProducts = () => {
-    const { getAllProducts, getCommentCount } = useContext(ProductContext);
+    const { getAllProducts, getCommentCount, getFollowersAndFollowings } = useContext(ProductContext);
 
     const [category, setCategory] = useState('');
     const [name, setName] = useState('');
@@ -24,26 +24,11 @@ export const TopProducts = () => {
     const fetchProducts = async () => {
         const fetchedProducts = await getAllProducts();
         setProducts(fetchedProducts);
-
     };
-
-    const handleFilterChange = () => {
-        fetchProducts();
-    }
 
     useEffect(() => {
-        handleFilterChange();
-    }, [category, name, rating]);
-
-
-    let filterProducts = () => {
-        setFilteredProducts(products.filter(product => {
-            const matchCategory = category === '' || product.category === category;
-            const matchName = name === '' || product.name.toLowerCase().includes(name.toLowerCase());
-            return matchCategory && matchName
-        }));
-    };
-
+        fetchProducts();
+    }, []);
 
     useEffect(() => {
         const fetchCommentCounts = async () => {
@@ -55,20 +40,47 @@ export const TopProducts = () => {
         };
 
         fetchCommentCounts();
-    }, [products, getCommentCount]);
+    }, [products]);
 
     useEffect(() => {
-        setFilteredProducts(products.filter(product => {
-            console.log(name)
+        const fetchFollowersAndFilterProducts = async () => {
+            if (user) {
+                const { following } = await getFollowersAndFollowings(user.uid);
+                console.log(products)
+                console.log(following)
+                const filteredProductsByFollowedUsers = products.filter(product =>
+                    following?.includes(product.data.userId)
+                );
+                
+                const remainingProducts = products.filter(product =>
+                    !following.includes(product.data.userId)
+                );
+                const updatedProductsList = filteredProductsByFollowedUsers.concat(remainingProducts);
+                console.log(updatedProductsList)
+             
+                setFilteredProducts(updatedProductsList);
+               
+            } else {
+                setFilteredProducts(products);
+            }
+        };
+
+        fetchFollowersAndFilterProducts();
+        
+    }, [products, user, getFollowersAndFollowings]);
+
+    
+
+    useEffect(() => {
+        const filtered = products.filter(product => {
             const matchCategory = category === '' || product.data.category === category;
             const matchName = name === '' || product.data.name.toLowerCase().includes(name.toLowerCase());
-            return matchCategory && matchName
-        }));
+            return matchCategory && matchName;
+        });
+        setFilteredProducts(filtered);
     }, [category, name, products]);
 
-
     const openModal = (product) => {
-        console.log(product);
         setSelectedProduct(product);
         setModalIsOpen(true);
     };
@@ -77,12 +89,6 @@ export const TopProducts = () => {
         setSelectedProduct(null);
         setModalIsOpen(false);
     };
-
-    useEffect(() => {
-        fetchProducts();
-        console.log(filteredProducts)
-
-    }, []);
 
     const categories = [
         "Electronics",
@@ -102,12 +108,11 @@ export const TopProducts = () => {
         "Industrial and Scientific"
     ];
 
-
     return (
         <>
             <div className='row py-2'>
                 <h5>Filter Products</h5>
-                <div className=' d-flex justify-content-between'>
+                <div className='d-flex justify-content-between'>
                     <div className='d-flex flex-column'>
                         <label className='py-1'>Category:</label>
                         <select className='form-control' value={category} onChange={(e) => setCategory(e.target.value)}>
@@ -123,8 +128,7 @@ export const TopProducts = () => {
                             <option value="">Select a name</option>
                             {products.map((item) => (
                                 <option key={item.id} value={item.data.name}>{item.data.name}</option>
-                            )
-                            )}
+                            ))}
                         </select>
                     </div>
                     <div className='d-flex flex-column'>
@@ -141,33 +145,29 @@ export const TopProducts = () => {
                 </div>
             </div>
 
-
             {filteredProducts.map((item) => (
                 <div key={item.id} onClick={() => openModal(item)} className="row product d-flex align-items-center">
                     <div className="col-md-1 me-3">
-                        <img width='48px' src={item.data.image} />
+                        <img width='48px' src={item.data.image} alt={item.data.name} />
                     </div>
                     <div className="col-md-8">
                         <div className="py-3 my-2">
                             <label><b>{item.data.name}</b> — {item.data.description}</label>
                             <div className="sub-description-product fs-6">
-                                {/* <svg width='16px' xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 13 12"><path d="M10.99 5.126c0-2.422-2.236-4.376-5-4.376S1 2.714 1 5.126C1 7.537 3.236 9.5 6 9.5c.288 0 .576-.028.854-.076l.029.038 3.416 1.287-.182-2.05c-.058-.6.106-1.182.394-1.715A3.9 3.9 0 0 0 11 5.115l-.01.01Z"></path></svg>
-                                {item.numberOfComments}{item.categories.map(e => (<label>{' • ' + e}</label>))} */}
+                                {/* Placeholder for additional product information */}
                             </div>
                         </div>
                     </div>
                     <div className='col-md-2 text-center'>
-                        <button type="button" data-test="vote-button" className="buttom-up">
+                        <button type="button" className="buttom-up">
                             <div className="flex flex-col items-center">
-                                <img src={iconUp} width='20px' />
+                                <img src={iconUp} width='20px' alt="icon up" />
                                 <div className="">{commentCounts[item.id] || 0}</div>
                             </div>
                         </button>
                     </div>
                 </div>
             ))}
-
-
 
             {selectedProduct && (
                 <ProductView
@@ -177,8 +177,8 @@ export const TopProducts = () => {
                 />
             )}
 
-            <div className='row'>
-                <img src={best} className='w-100' />
+            <div className='row py-5'>
+                <img src={best} className='w-100' alt="best" />
             </div>
         </>
     );

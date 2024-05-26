@@ -198,9 +198,14 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+  const resetProductComments = () => {
+    dispatch({
+      type: productTypes.resetComments
+    });
+  };
 
 
-  const followUser = async (userIdToFollow) => {
+  const followUser = async (userIdToFollow, displayName) => {
     try {
       const userDocRef = doc(FirebaseDB, `users/${user.uid}`);
       const userToFollowDocRef = doc(FirebaseDB, `users/${userIdToFollow}`);
@@ -210,7 +215,7 @@ export const ProductsProvider = ({ children }) => {
       } else { 
         await updateDoc(userDocRef, { following: arrayUnion(userIdToFollow) });
         await updateDoc(userToFollowDocRef, { followers: arrayUnion(user.uid) });
-        alert('You follow:' + user.displayName)
+        alert('You follow:' + displayName)
       }
       
 
@@ -272,7 +277,8 @@ export const ProductsProvider = ({ children }) => {
       followUser,
       unfollowUser,
       getFollowersAndFollowings,
-      getAllUsers
+      getAllUsers,
+      resetProductComments
     }}>
       {children}
     </ProductContext.Provider>

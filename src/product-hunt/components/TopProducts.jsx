@@ -46,8 +46,8 @@ export const TopProducts = () => {
         const fetchFollowersAndFilterProducts = async () => {
             if (user) {
                 const { following } = await getFollowersAndFollowings(user.uid);
+                console.log("Estos son los productos")
                 console.log(products)
-                console.log(following)
                 const filteredProductsByFollowedUsers = products.filter(product =>
                     following?.includes(product.data.userId)
                 );

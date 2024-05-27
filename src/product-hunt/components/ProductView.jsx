@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const ProductView = ({ product, isOpen, onClose }) => {
-    const { addComment, getProductComments, productsComment, followUser, resetProductComments } = useContext(ProductContext);
+    const { addComment, getProductComments, productsComment, followUser, resetProductComments, updateGlobalRanting } = useContext(ProductContext);
     const { user, logged } = useContext(AuthContext);
     const [newReview, setNewReview] = useState({ content: '', rate: 0 });
     const [averageRating, setAverageRating] = useState(0)
@@ -22,10 +22,13 @@ const ProductView = ({ product, isOpen, onClose }) => {
         fetchProductsComments();
     }, [product.id]);
 
-    useEffect(() => { 
+    useEffect(() => {
         calculateAvergareRating()
-    },[productsComment])
 
+
+
+    }, [productsComment])
+    
     console.log(productsComment)
 
     const handleReviewChange = (e) => {
@@ -39,6 +42,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
     const handleAddComment = async () => {
         if (user) {
             await addComment(product.id, newReview.content, newReview.rate, user);
+            await updateGlobalRanting(product.id, averageRating);
             setNewReview({ content: '', rate: 0 });
         } else {
             alert('You need to be logged in to add a comment.');
@@ -47,7 +51,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
 
     const handleFollowUser = async (userId, displayName) => {
         if (user) {
-            await followUser(userId,displayName )
+            await followUser(userId, displayName)
         } else {
             alert('You need to be logged in to add a comment.');
         }
@@ -104,8 +108,8 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                             <button className='btn btn-success mx-3'>Visit</button>
                                         </div>
                                         <div>
-                                            <div class="card">
-                                                <div class="card-body">
+                                            <div className="card">
+                                                <div className="card-body">
                                                     <h5>Average rating:</h5>
                                                     <h5 className='text-center'>{averageRating}/5</h5>
                                                 </div>
@@ -162,7 +166,7 @@ const ProductView = ({ product, isOpen, onClose }) => {
                                                     <div className='d-flex py-2 justify-content-between'>
                                                         <img width='40px' src={productsComment[product.id][commentId].userPhotoUrl} />
                                                         <h5 className="card-title">{productsComment[product.id][commentId].userDisplayName}</h5>
-                                                        <button width='' onClick={() => handleFollowUser(productsComment[product.id][commentId].userId, productsComment[product.id][commentId].userDisplayName )} className='btn btn-warning'>Follow</button>
+                                                        <button width='' onClick={() => handleFollowUser(productsComment[product.id][commentId].userId, productsComment[product.id][commentId].userDisplayName)} className='btn btn-warning'>Follow</button>
                                                     </div>
                                                     <div className="card-body">
 

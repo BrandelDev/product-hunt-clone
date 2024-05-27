@@ -165,6 +165,54 @@ export const ProductsProvider = ({ children }) => {
     }
   };
 
+  const updateGlobalRanting = async (productId, averageRanting) => {
+
+    try {
+      const productRef = doc(FirebaseDB, `products/${productId}`);
+
+      // Check if document exists
+      const docSnap = await getDoc(productRef);
+
+      if (docSnap.exists()) {
+        console.log("El documento existe")
+        await updateDoc(productRef, {
+          averageRanting: averageRanting
+        });
+      } else {
+        await setDoc(productRef, {
+          averageRanting: averageRanting
+        });
+      }
+
+
+    } catch (error) {
+      console.error('Error adding global ranting:', error)
+    }
+
+  }
+
+  const calculateGlobalRanting = async () => {
+    const productsRef = collection(FirebaseDB, 'products');
+
+    const docsSnap = await getDocs(productsRef);
+
+    if (!docsSnap.empty) {
+        console.log("Los documentos existen");
+        let totalObjects = 0;
+        let totalRating = 0
+        docsSnap.forEach(doc => {
+            totalRating += doc.data().averageRanting;
+            totalObjects++;
+            console.log(doc.id, " => ", doc.data().averageRanting);
+        });
+        
+        const averageRating = totalObjects > 0 ? (totalRating / totalObjects) : 0;
+        return averageRating;
+    } else {
+        console.log("No se encontraron documentos.");
+    }
+  }
+
   const getCommentCount = async (productId) => {
     try {
       const commentsCollectionRef = collection(FirebaseDB, `products/${productId}/comments`);
@@ -211,13 +259,13 @@ export const ProductsProvider = ({ children }) => {
       const userToFollowDocRef = doc(FirebaseDB, `users/${userIdToFollow}`);
 
       if (userIdToFollow === user.uid) {
-       alert('You not follow to self.');
-      } else { 
+        alert('You not follow to self.');
+      } else {
         await updateDoc(userDocRef, { following: arrayUnion(userIdToFollow) });
         await updateDoc(userToFollowDocRef, { followers: arrayUnion(user.uid) });
         alert('You follow:' + displayName)
       }
-      
+
 
       dispatch({ type: productTypes.followUser, payload: userIdToFollow });
     } catch (error) {
@@ -249,7 +297,7 @@ export const ProductsProvider = ({ children }) => {
         const userData = userDocSnapshot.data();
         console.log(userData)
         return {
-          
+
           followers: userData.followers || [],
           following: userData.following || []
         };
@@ -278,7 +326,9 @@ export const ProductsProvider = ({ children }) => {
       unfollowUser,
       getFollowersAndFollowings,
       getAllUsers,
-      resetProductComments
+      resetProductComments,
+      updateGlobalRanting,
+      calculateGlobalRanting
     }}>
       {children}
     </ProductContext.Provider>

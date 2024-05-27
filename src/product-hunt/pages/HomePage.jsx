@@ -1,4 +1,5 @@
 
+import ProductsAverageRating from "../components/ProductsAverageRating";
 import { TopProducts } from "../components/TopProducts";
 
 export const HomePage = () => {
@@ -41,7 +42,7 @@ export const HomePage = () => {
 
                     </div>
                     <div className="col-lg-3">
-                        <label className="mb-3 pb-2">TOP LAUNCHES</label>
+                        <label className="mb-3 pb-1">TOP LAUNCHES</label>
                         <div className="d-flex flex-column ">
 
                         <label className="mb-1" ><b>Today's winners</b></label> 
@@ -49,6 +50,11 @@ export const HomePage = () => {
                         <label className="mb-1" ><b>Last week's winners</b></label>
                         <label className="mb-1"><b>Last month's winners</b></label>
                         </div>
+
+                        <hr/>
+
+                        <ProductsAverageRating/>
+
                         
                         
 

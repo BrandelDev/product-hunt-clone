@@ -8,7 +8,7 @@ const ProductsAverageRating = () => {
     useEffect(() => {
         const fetchAndCalculateAverageRating = async () => {
             const globalRatingResponse = await calculateGlobalRanting();
-            setGlobalRating(globalRatingResponse);
+            setGlobalRating(Math.round((globalRatingResponse) * 100) / 100);
         }
         fetchAndCalculateAverageRating();
     }, [calculateGlobalRanting]);

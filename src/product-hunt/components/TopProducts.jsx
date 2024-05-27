@@ -131,7 +131,7 @@ export const TopProducts = () => {
                             ))}
                         </select>
                     </div>
-                    <div className='d-flex flex-column'>
+                    <div className='d-flex  d-none flex-column'>
                         <label className='py-1'>Rating:</label>
                         <select className='form-control' value={rating} onChange={(e) => setRating(e.target.value)}>
                             <option value="">Select a rating</option>
